@@ -1,11 +1,4 @@
 # Databricks notebook source
-# MAGIC %md
-# MAGIC ------------------------------
-# MAGIC ###  1. Leitura da camada bronze
-# MAGIC -------------------------------
-
-# COMMAND ----------
-
 # Leitura da tabela na camada bronze
 
 df = spark.table("portfolio_inss.bronze.bronze_municipios_ibge")
