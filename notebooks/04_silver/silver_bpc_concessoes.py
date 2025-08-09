@@ -1,4 +1,6 @@
 # Databricks notebook source
+# Bibliotecas
+
 from pyspark.sql.functions import when, col, lower, to_date, year, current_date, date_diff, floor, expr, regexp_extract
 
 # COMMAND ----------
