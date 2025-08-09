@@ -1,44 +1,23 @@
 # Databricks notebook source
-# MAGIC %md
-# MAGIC ------------------------------
-# MAGIC ###  1. Leitura da camada bronze
-# MAGIC -------------------------------
-
-# COMMAND ----------
+# Leitura da tabela na camada bronze
 
 df = spark.table("portfolio_inss.bronze.bronze_ibge_censo_2022")
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC  ----------------------------------
-# MAGIC ###  2. Visualização inicial da estrutura
-# MAGIC  ---------------------------------- 
-
-# COMMAND ----------
+# Visualização inicial da estrutura
 
 df.printSchema()
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC ---------------------------
-# MAGIC ### 4. Seleção de colunas úteis
-# MAGIC ---------------------------
-# MAGIC
-
-# COMMAND ----------
+# Seleção de colunas úteis
 
 df = df.select('id_municipio','id_municipio_nome','sexo','idade_anos','populacao')
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC ----------------------
-# MAGIC ### 6. Criação de colunas
-# MAGIC ----------------------
-
-# COMMAND ----------
+# Criando tabela na camada silver
 
 df.write.format("delta")\
     .mode("overwrite")\
