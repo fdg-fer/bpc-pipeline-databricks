@@ -116,6 +116,8 @@ df_result = df_final.select(*colunas_originais,"uf_final", "flag_origem_uf")
 
 # COMMAND ----------
 
+# Criando tabela
+
 df_result.write.format("delta")\
     .mode("overwrite")\
     .saveAsTable("portfolio_inss.silver.silver_bpc_concessoes")
