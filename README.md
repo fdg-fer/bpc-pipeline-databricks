@@ -1,8 +1,12 @@
 %md
 
-# Engenharia de Dados - Projeto BPC
+# Projeto BPC - Análise de Judicialização, Cobertura e Prazos
 
-Este documento descreve a parte de engenharia do portfólio BPC, com foco na coleta, organização e transformação dos dados em uma arquitetura em camadas, utilizando o Databricks com notebooks em PySpark e SQL. 
+
+O Benefício de Prestação Continuada (BPC) é um dos programas mais debatidos no âmbito da Previdência e da Assistência Social no Brasil. Diferente de benefícios como aposentadoria ou auxílio-doença, o BPC não exige contribuição prévia do beneficiário, sendo voltado exclusivamente para pessoas idosas ou com deficiência em situação de vulnerabilidade social.
+
+Essa característica de não depender de arrecadação individual faz com que o BPC seja constantemente alvo de discussões políticas e propostas de alteração legislativa, especialmente em momentos de ajuste fiscal. Como consequência, seu cenário de concessão e manutenção exige monitoramento constante, já que mudanças nas regras podem impactar diretamente milhões de famílias que dependem desse auxílio.
+
 
 ---
 
@@ -22,29 +26,62 @@ Os dados utilizados no projeto foram extraídos de três principais fontes púpl
 ---
 
 ## Arquitetura de dados
-O pipeline foi estruturado seguindo o moedelo **Medallion Architecture (Bronze, Silver, Gold)** que facilita a rastreabilidade, versionamento e reutilização dos dados em múltiplos estágios.
+O pipeline foi estruturado seguindo o modelo **Medallion Architecture (Bronze, Silver, Gold)** que facilita a rastreabilidade, versionamento e reutilização dos dados em múltiplos estágios.
 
 ### Camadas:
 
 ### Bronze
 - Dados brutos carregados diretamente dos arquivos CSV das fontes públicas.
-- Pouco ou nehum tratamento.
+- Pouco ou nenhum tratamento.
 - Objetivo: manter a versão original para rastreabilidade.
 
 ### Silver 
 - Aplicação de regras de negócios e limpeza dos dados. 
-- Seleção de colunas relevantes, padronização de tipos e nomes, filtragem por tipo de benefício (BPC) e tipo de despacho (administrativo/judicial).
+- Seleção de colunas relevantes, padronização de tipos, nomes e tipo de despacho (administrativo/judicial).
 
-### Gold
-- Dados organizados em tabelas fato e dimensões.
-- Aplicação de agregações, cálculos de prazos, cobertura, e estrutura para consumo final (dashboards, análises).
-- Destaques:
-  - Fato BPC Geral
-  - Fato BPC por UF
-  - Fato População/Público-alvo
-  - Dimensão Calendário
-  - Dimensão Benefício
-  - Dimensão UF/Região
+## Camada Gold
+
+Nesta camada, os dados já passaram por limpeza e transformações, estando prontos para **consumo final** em dashboards, relatórios e análises exploratórias.  
+A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensão, permitindo consultas otimizadas e agregações consistentes.
+
+### Objetivos
+- Consolidar informações calculadas e agregadas.
+- Organizar dados para fácil integração com ferramentas de BI.
+- Garantir consistência em métricas como **cobertura**, **prazos médios/medianos** e segmentações por UF e público-alvo.
+
+### Estrutura das Tabelas
+
+**Tabelas Fato**
+- **Fato BPC Geral** – Dados consolidados do BPC em nível nacional, com métricas de cobertura e prazos.
+
+
+  ![Fato BPC Geral](<imagens/fato_bpc_geral.png>)
+
+- **Fato BPC por UF** – Mesma granularidade da tabela geral, mas segmentada por Unidade Federativa.
+
+  ![Fato BPC por UF](<imagens/fato_bpc_uf.png>) 
+
+- **Fato População/Público-alvo** – Informações demográficas e quantitativas sobre o público-alvo do benefício.
+
+  ![Fato População](<imagens/fato_populacao.png>)
+
+**Tabelas Dimensão**
+- **Dimensão Calendário** – Datas de referência para análises temporais (ano, mês, trimestre, etc.).
+
+  ![Dimensão Calendário](<imagens/dim_calendario.png>)
+
+- **Dimensão Benefício** – Classificação e tipo de benefício dentro do BPC.
+
+  ![Dimensão Benefício](<imagens/dim_beneficio.png>)
+
+- **Dimensão UF/Região** – Mapeamento de Unidades Federativas para suas respectivas regiões.
+
+  ![Dimensão UF/Região](<imagens/dim_uf.png>)
+
+### Exemplos de Uso
+- Cálculo de cobertura por UF ao longo do tempo.
+- Comparação de prazos médios administrativos e judiciais.
+- Dashboards interativos no Power BI segmentados por região e público.
 
 ---
 
@@ -54,11 +91,11 @@ Abaixo, o fluxo visual que mostra a transformação dos dados da camada Bronze a
 
 - Fluxo de camadas da tabela BPC Geral e BPC por UF
 
-  ![Fluxo de Tranformação de tabelas](</Volumes/portfolio_inss/base_bpc/imagens/fluxo_bpc.png>)
+  ![Fluxo de Tranformação de tabelas](<imagens/fluxo_populacao_bpc.png>)
 
 - Fluxo de  camadas da tabela População PBC 
 
-  ![Fluxo de Tranformação de tabelas](</Volumes/portfolio_inss/base_bpc/imagens/fluxo_populacao_bpc.png>)
+  ![Fluxo de Tranformação de tabelas](<imagens/fluxo_populacao_bpc.png>)
 
 ---
 
