@@ -28,6 +28,8 @@ Os dados utilizados no projeto foram extraídos de três principais fontes púpl
 ## Arquitetura de dados
 O pipeline foi estruturado seguindo o modelo **Medallion Architecture (Bronze, Silver, Gold)** que facilita a rastreabilidade, versionamento e reutilização dos dados em múltiplos estágios.
 
+![Medallion Architecture](<imagens/medallion.png>)
+
 ### Camadas:
 
 ### Bronze
@@ -39,7 +41,7 @@ O pipeline foi estruturado seguindo o modelo **Medallion Architecture (Bronze, S
 - Aplicação de regras de negócios e limpeza dos dados. 
 - Seleção de colunas relevantes, padronização de tipos, nomes e tipo de despacho (administrativo/judicial).
 
-## Camada Gold
+### Camada Gold
 
 Nesta camada, os dados já passaram por limpeza e transformações, estando prontos para **consumo final** em dashboards, relatórios e análises exploratórias.  
 A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensão, permitindo consultas otimizadas e agregações consistentes.
@@ -53,7 +55,6 @@ A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensã
 
 **Tabelas Fato**
 - **Fato BPC Geral** – Dados consolidados do BPC em nível nacional, com métricas de cobertura e prazos.
-
 
   ![Fato BPC Geral](<imagens/fato_bpc_geral.png>)
 
