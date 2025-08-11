@@ -237,29 +237,21 @@ Abaixo, o fluxo visual que mostra a transformação dos dados da camada Bronze a
 
 Fluxo de camadas da tabela BPC
 
-- **Volume**
-  - `6 arquivos csv`
-- **Bronze**
-  - Tabela:`bronze_inss_bpc_2025_01_06`
-- **Silver**
-  - Tabela:`silver_bpc_concessoes`
-- **Gold**
-  - Tabela:`gold_fato_bpc_uf`
-  - Tabela:`gold_fato_bpc_geral`
+
+| Volume               | Bronze                          | Silver                  | Gold                                  |
+|:--------------------:|:-------------------------------:|:-----------------------:|:-------------------------------------:|
+| `6 arquivos csv`     | `bronze_inss_bpc_2025_01_06`    | `silver_bpc_concessoes` | `gold_fato_bpc_uf` / `gold_fato_bpc_geral` |
+
 
   ![Fluxo de Tranformação de tabelas](<img/fluxo_bpc.png>)
 
+
 Fluxo de  camadas da tabela População PBC 
 
-- **Volume**
-  - `2 arquivos csv`
-- **Bronze**
-  - Tabela:`bronze_inss_bpc_2025_01_06`
-- **Silver**
-  - Tabela:`silver_bpc_concessoes`
-- **Gold**
-  - Tabela:`gold_fato_bpc_uf`
-  - Tabela:`gold_fato_bpc_geral`
+| Volume ->           | Bronze ->                                                           | Silver ->                                       | Gold                | 
+|---------------------|---------------------------------------------------------------------|-------------------------------------------------|--------------------|
+|  `2 arquivos csv`   |`bronze_ibge_bronze_censo_2022`/`bronze_ibge_bronze_municipios_ibge`| `silver_ibge_populacao`/`silver_municipios_ibge`| `gold_fato_populacao_bpc`| 
+
 
   ![Fluxo de Tranformação de tabelas](<img/fluxo_populacao_bpc.png>)
 
@@ -279,7 +271,6 @@ Fluxo de  camadas da tabela População PBC
 A distinção de recorte temporal é feita apenas em visões específicas para análises recentes. As camadas Bronze e Silver não aplicam esse filtro.
 
 ---
-
 
 ## Estrutura de Pastas do Projeto
 
