@@ -47,7 +47,7 @@ Os dados utilizados no projeto foram extraídos de três principais fontes púpl
 ## Arquitetura de dados
 O pipeline foi estruturado seguindo o modelo **Medallion Architecture (Bronze, Silver, Gold)** que facilita a rastreabilidade, versionamento e reutilização dos dados em múltiplos estágios.
 
-![Medallion Architecture](<imagens/medallion.png>)
+![Medallion Architecture](<img/medallion.png>)
 
 ### Por que usar arquitetura em camadas?
 
@@ -94,28 +94,28 @@ Esse recorte temporal é aplicado para assegurar que a análise se concentre em 
 
 - **Fato BPC Geral** – Dados consolidados do BPC em nível nacional, com métricas de cobertura e prazos.
 
-  ![Fato BPC Geral](<imagens/fato_bpc_geral.png>)
+  ![Fato BPC Geral](<img/fato_bpc_geral.png>)
 
 - **Fato BPC por UF** – Mesma granularidade da tabela geral, mas segmentada por Unidade Federativa.
 
-  ![Fato BPC por UF](<imagens/fato_bpc_uf.png>) 
+  ![Fato BPC por UF](<img/fato_bpc_uf.png>) 
 
 - **Fato População/Público-alvo** – Informações demográficas e quantitativas sobre o público-alvo do benefício.
 
-  ![Fato População](<imagens/fato_populacao.png>)
+  ![Fato População](<img/fato_populacao.png>)
 
 **Tabelas Dimensão**
 - **Dimensão Calendário** – Datas de referência para análises temporais (ano, mês, trimestre, etc.).
 
-  ![Dimensão Calendário](<imagens/dim_calendario.png>)
+  ![Dimensão Calendário](<img/dim_calendario.png>)
 
 - **Dimensão Benefício** – Classificação e tipo de benefício dentro do BPC.
 
-  ![Dimensão Benefício](<imagens/dim_beneficio.png>)
+  ![Dimensão Benefício](<img/dim_beneficio.png>)
 
 - **Dimensão UF/Região** – Mapeamento de Unidades Federativas para suas respectivas regiões.
 
-  ![Dimensão UF/Região](<imagens/dim_uf.png>)
+  ![Dimensão UF/Região](<img/dim_uf.png>)
 
 #### Exemplos de Uso
 - Cálculo de cobertura por UF ao longo do tempo.
@@ -140,7 +140,7 @@ Fluxo de camadas da tabela BPC
   - Tabela:`gold_fato_bpc_uf`
   - Tabela:`gold_fato_bpc_geral`
 
-  ![Fluxo de Tranformação de tabelas](<imagens/fluxo_bpc.png>)
+  ![Fluxo de Tranformação de tabelas](<img/fluxo_bpc.png>)
 
 - Fluxo de  camadas da tabela População PBC 
 
@@ -154,7 +154,7 @@ Fluxo de camadas da tabela BPC
   - Tabela:`gold_fato_bpc_uf`
   - Tabela:`gold_fato_bpc_geral`
 
-  ![Fluxo de Tranformação de tabelas](<imagens/fluxo_populacao_bpc.png>)
+  ![Fluxo de Tranformação de tabelas](<img/fluxo_populacao_bpc.png>)
 
 ---
 
