@@ -1,12 +1,28 @@
 %md
 
 # Projeto BPC - Análise de Judicialização, Cobertura e Prazos
+_Dados de concessões BPC do primeiro semestre de 2025._
 
+O Benefício de Prestação Continuada (BPC) é um dos temas mais debatidos no âmbito da assistência social no Brasil. Voltado para pessoas idosas ou com deficiência em situação de vulnerabilidade, o BPC se diferencia de benefícios previdenciários como aposentadorias ou auxílios por incapacidade, pois não exige contribuição prévia do beneficiário. Essa característica, somada ao seu impacto social e orçamentário, o torna alvo frequente de debates políticos, ajustes fiscais e mudanças legislativas.
 
-O Benefício de Prestação Continuada (BPC) é um dos programas mais debatidos no âmbito da Previdência e da Assistência Social no Brasil. Diferente de benefícios como aposentadoria ou auxílio-doença, o BPC não exige contribuição prévia do beneficiário, sendo voltado exclusivamente para pessoas idosas ou com deficiência em situação de vulnerabilidade social.
+A concessão do BPC pode ocorrer de duas formas: **administrativa**, diretamente pelo INSS, ou **judicial**, quando o pedido inicial é negado e o requerente recorre à Justiça. A judicialização representa não apenas um aumento da demanda para o Judiciário, mas também uma oportunidade para escritórios e profissionais jurídicos identificarem regiões com maior potencial de atuação.
 
-Essa característica de não depender de arrecadação individual faz com que o BPC seja constantemente alvo de discussões políticas e propostas de alteração legislativa, especialmente em momentos de ajuste fiscal. Como consequência, seu cenário de concessão e manutenção exige monitoramento constante, já que mudanças nas regras podem impactar diretamente milhões de famílias que dependem desse auxílio.
+Compreender **quais regiões apresentam índices elevados de judicialização e como se comportam os indicadores de cobertura e prazos** permite tomadas de decisão mais estratégicas. Por exemplo:
 
+  - No **BPC-Idoso**, que possui menos barreiras técnicas, regiões com alta judicialização e baixa cobertura podem sinalizar alto potencial de novas ações.
+
+  - No **BPC-Deficiente**, que exige perícias e laudos mais complexos, indicadores como prazos médios e tipo de decisão ajudam a identificar áreas com maior necessidade de apoio jurídico especializado.
+
+Este projeto propõe uma solução baseada em indicadores estruturados e atualizados, permitindo monitorar a situação do BPC por unidade federativa e modalidade, ajudando gestores e advogados a agir de forma mais direcionada e eficaz.
+
+---
+
+## Tecnologias Utilizadas 
+
+- **Databricks Free Edition** (ambiente de notebooks)
+- **Pyspark, Python e SQL** (tranformações, limpeza, análise exploratória, cálculos)
+- **Power BI**: (visualização final dos dados)
+- **GitHub** (versionamento e documentação - integrado ao Databricks)
 
 ---
 
@@ -16,12 +32,15 @@ Os dados utilizados no projeto foram extraídos de três principais fontes púpl
 
 - **INSS**: Tabela de concessões do BPC por mês, disponível em csv.
  [Fonte: INSS - Dados Abertos](https://dadosabertos.inss.gov.br/dataset/beneficios-concedidos-plano-de-dados-abertos-jun-2023-a-jun-2025)
+  - Quantidade de arquivos: 6 cvs - Concessões de jan/25 a jun/25
 
 - **IBGE (Censo 2022)**: População total por município, utilizada para cálculo de cobertura e identificação do público-alvo.  
-  [Fonte: Censo IBGE 2022](https://www.ibge.gov.br/)
+  [Fonte: Censo IBGE 2022](https://www.ibge.gov.br/estatisticas/sociais/trabalho/22827-censo-demografico-2022.html?=&t=downloads/)
+  - Quantidade de arquivos: 1 csv
 
 - **Municípios/UF/Região**: Tabela de referência com códigos de municípios, sigla UF e região geográfica.  
-  [Fonte: IBGE – Tabela de Referência Territorial](https://www.ibge.gov.br/)
+  [Fonte: IBGE – Tabela de Referência Territorial](https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais/15774-malhas.html/)
+  - Quantidade de arquivos: 1 csv
 
 ---
 
@@ -41,19 +60,27 @@ O pipeline foi estruturado seguindo o modelo **Medallion Architecture (Bronze, S
 - Aplicação de regras de negócios e limpeza dos dados. 
 - Seleção de colunas relevantes, padronização de tipos, nomes e tipo de despacho (administrativo/judicial).
 
+#### Estrutura das Tabelas Silver
+- [Baixar Dicionário Silver](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/silver.xlsx)
+
 ### Camada Gold
 
 Nesta camada, os dados já passaram por limpeza e transformações, estando prontos para **consumo final** em dashboards, relatórios e análises exploratórias.  
 A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensão, permitindo consultas otimizadas e agregações consistentes.
 
-### Objetivos
+#### Objetivos
 - Consolidar informações calculadas e agregadas.
 - Organizar dados para fácil integração com ferramentas de BI.
 - Garantir consistência em métricas como **cobertura**, **prazos médios/medianos** e segmentações por UF e público-alvo.
 
-### Estrutura das Tabelas
+#### Estrutura das Tabelas Gold
+- [Baixar Dicionário Gold](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/gold.xlsx)
 
 **Tabelas Fato**
+
+As tabelas Fato BPC reúnem informações consolidadas sobre solicitações e concessões do BPC, filtradas de acordo com o critério temporal definido para a análise: consideram-se apenas processos cuja data de entrada seja igual ou posterior a 01/01/2024.
+Esse recorte temporal é aplicado para assegurar que a análise se concentre em pedidos recentes, possibilitando a avaliação de prazos e perfis de concessão.
+
 - **Fato BPC Geral** – Dados consolidados do BPC em nível nacional, com métricas de cobertura e prazos.
 
   ![Fato BPC Geral](<imagens/fato_bpc_geral.png>)
@@ -110,14 +137,6 @@ A Medallion Architecture permite:
 - **Versionamento lógico**: A organização em camadas ajuda a entender a evolução dos dados ao longo do pipeline.
 
 ---
-
-## Tecnologias Utilizadas 
-
-- **Databricks Free Edition** (ambiente de notebooks)
-- **Pyspark, Python e SQL** (tranformações, limpeza, análise exploratória, cálculos)
-- **Power BI**: (visualização final dos dados)
-- **GitHub** (versionamento e documentação - integrado ao Databricks)
-
 
 ## Estrutura de Pastas do Projeto (para GitHub)
 
