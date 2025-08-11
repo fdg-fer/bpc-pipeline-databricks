@@ -264,45 +264,39 @@ Fluxo de  camadas da tabela População PBC
 
 ---
 
-## Estrutura de Pastas do Projeto (para GitHub)
+## Estrutura de Pastas do Projeto
 
 ```
 📦 bpc-databricks-pipeline
 │
 ├── 📁 notebooks
 │   ├── 📁 bronze
-│   │   ├── 🐍 bronze_bpc_ingestao.ipynb           # PySpark - CSV do BPC → bronze
-│   │   ├── 🐍 bronze_censo_ingestao.ipynb         # PySpark - CSV do Censo → bronze
-│   │   └── 🐍 bronze_uf_municipios_ingestao.ipynb # PySpark - CSV de UF → bronze
+│   │   ├── bronze_bpc_ingestao.ipynb           # PySpark - CSV do BPC → bronze
+│   │   ├── bronze_censo_ingestao.ipynb         # PySpark - CSV do Censo → bronze
+│   │   └── bronze_uf_municipios_ingestao.ipynb # PySpark - CSV de UF → bronze
 │   │
 │   ├── 📁 silver
-│   │   ├── 🐍 silver_bpc_concessoes.ipynb              # PySpark - Tratamento BPC
-│   │   ├── 🐍 silver_censo_tratado.ipynb              # PySpark - População tratada
-│   │   ├── 🐍 silver_uf_regiao_tratado.ipynb          # PySpark - UF e região
-│   │   └── 📝 silver_populacao_bpc.sql                # SQL - União para gerar população BPC
+│   │   ├── silver_bpc_concessoes.ipynb              # PySpark - Tratamento BPC
+│   │   ├── silver_censo_tratado.ipynb              # PySpark - População tratada
+│   │   ├── silver_uf_regiao_tratado.ipynb          # PySpark - UF e região
+│   │   └── silver_populacao_bpc.sql                # SQL - União para gerar população BPC
 │   │
 │   ├── 📁 gold
-│   │   ├── 📝 gold_fato_bpc_uf.sql                    # SQL - Fato por UF
-│   │   ├── 📝 gold_fato_bpc_geral.sql                 # SQL - Fato geral
-│   │   ├── 📝 gold_dim_uf_regiao.sql                  # SQL - Dimensão UF
-│   │   ├── 📝 gold_dim_beneficio.sql                  # SQL - Dimensão benefício
-│   │   ├── 📝 gold_dim_calendario.sql                 # SQL - Dimensão calendário
-│   │   └── 📝 gold_dim_populacao.sql                  # SQL - População/público-alvo
-│
+│   │   ├── gold_fato_bpc_uf.sql                    # SQL - Fato por UF
+│   │   ├── gold_fato_bpc_geral.sql                 # SQL - Fato geral
+│   │   ├── gold_dim_uf_regiao.sql                  # SQL - Dimensão UF
+│   │   ├── gold_dim_populacao.sql                  # SQL - População/público-alvo
+│   │   ├── gold_dim_beneficio.sql                  # SQL - Dimensão benefício
+│   │   └── gold_dim_calendario.sql                 # SQL - Dimensão calendário
+│   │
 ├── 📁 dashboards
-│   └── 📸 prints_dashboards/                          # Imagens do Power BI ou links
+│   └── prints_dashboards/                          # Imagens do Power BI ou links
 │
 ├── 📁 img
 │   ├── fluxo_tabelas_databricks.png                   # Fluxo visual entre tabelas
 │   └── prints_tabelas/                                # Prints detalhados por camada
 │
-├── 📁 docs
-│   ├── README_engenharia.md                           # Parte técnica do projeto
-│   ├── README_negocio.md                              # Parte de negócio e objetivo
-│   ├── metodologia.md                                 # Detalhes de abordagem
-│   └── dicionario_dados.md                            # Campos por tabela e camada
-│
-└── README.md                                          # Visão geral do projeto (linkando os outros)
+└── README.md                                          # Visão geral do projeto
 
 ```
 
