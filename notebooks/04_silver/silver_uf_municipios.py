@@ -1,5 +1,5 @@
 # Databricks notebook source
-# Leitura da tabela na camada bronze
+# Leitura da tabela delta da camada bronze
 
 df = spark.table("portfolio_inss.bronze.bronze_municipios_ibge")
 
@@ -17,7 +17,7 @@ df = df.select('CD_MUN', 'NM_MUN', 'CD_UF', 'NM_UF', 'SIGLA_UF')
 
 # COMMAND ----------
 
-# Criando tabela na camada silver
+# Grava dados do df na tabela delta na camada silver
 
 df.write.format("delta")\
     .mode("overwrite")\

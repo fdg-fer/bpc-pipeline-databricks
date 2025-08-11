@@ -1,11 +1,11 @@
 # Databricks notebook source
-# Leitura da tabela na camada bronze
+# Leitura da tabela delta da camada bronze
 
 df = spark.table("portfolio_inss.bronze.bronze_ibge_censo_2022")
 
 # COMMAND ----------
 
-# Visualização inicial da estrutura
+# Visualização da estrutura
 
 df.printSchema()
 
@@ -17,7 +17,7 @@ df = df.select('id_municipio','id_municipio_nome','sexo','idade_anos','populacao
 
 # COMMAND ----------
 
-# Criando tabela na camada silver
+# Grava dados do df na tabela delta na camada silver
 
 df.write.format("delta")\
     .mode("overwrite")\

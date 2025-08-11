@@ -1,17 +1,20 @@
 # Databricks notebook source
+# Leitura do arquivo csv
+
 df = (
     spark.read.format("csv")
-    .option("header", "true")
-    .option("inferSchema", "true")
-    .option("delimiter", ",")
-    .option("encoding", "UTF-8")  # se já é UTF-8, use isso explicitamente
+    .option("header", "true") # se tem cabeçalho
+    .option("inferSchema", "true") # inferir schema do arquivo csv
+    .option("delimiter", ",") # delimitador do arquivo csv
+    .option("encoding", "UTF-8")  # encoding do arquivo csv
     .load("dbfs:/Volumes/portfolio_inss/base_bpc/raw_uploads/municipios_ibge.csv")
 )
 
 
 # COMMAND ----------
 
-# Grava tabela no schema bronze
+# Grava dados do df na tabela delta na camada bronze 
+
 df.write.format("delta") \
     .mode("overwrite") \
     .saveAsTable("portfolio_inss.bronze.bronze_municipios_ibge")

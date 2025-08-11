@@ -1,10 +1,11 @@
 # Databricks notebook source
+# Cria a tabela BPC com granularidade por UF e competência
 
 query = """
 
-create or replace table portfolio_inss.gold.gold_fato_bpc_uf as (
-  WITH 
+CREATE OR REPLACE TABLE portfolio_inss.gold.gold_fato_bpc_uf as (
 
+  WITH 
   -- Cálculo dos prazos médios por tipo
   prazo_medio AS (
     SELECT
@@ -15,7 +16,7 @@ create or replace table portfolio_inss.gold.gold_fato_bpc_uf as (
       ROUND(avg(dias_ate_despacho), 1) AS prazo_medio,
       ROUND(median(dias_ate_despacho), 1) AS prazo_mediana
     FROM portfolio_inss.silver.silver_bpc_concessoes
-    WHERE dt_inicio_beneficio >= '2024-01-01'
+    WHERE dt_inicio_beneficio >= '2024-01-01' 
     GROUP BY competencia, beneficio, tipo_despacho, uf_final
   ),
 
@@ -55,7 +56,11 @@ create or replace table portfolio_inss.gold.gold_fato_bpc_uf as (
     q.beneficio,
     q.qtd_administrativo,
     q.qtd_judicial
-  ORDER BY q.competencia, q.uf_final, q.beneficio
+  ORDER BY 
+    q.competencia,
+    q.uf_final,
+    q.beneficio
 )
 """
-spark.sql(query)
+spark.sql(query)	
+
