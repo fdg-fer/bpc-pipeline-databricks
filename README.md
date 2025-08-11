@@ -235,7 +235,7 @@ Esse recorte temporal é aplicado para assegurar que a análise se concentre em 
 
 Abaixo, o fluxo visual que mostra a transformação dos dados da camada Bronze até a Gold:
 
-Fluxo de camadas da tabela BPC
+Fluxo de camadas das tabelas -> `gold_fato_bpc_geral` e `gold_fato_bpc_uf`
 
 
 | Volume               | Bronze                          | Silver                  | Gold                                  |
@@ -246,9 +246,9 @@ Fluxo de camadas da tabela BPC
   ![Fluxo de Tranformação de tabelas](<img/fluxo_bpc.png>)
 
 
-Fluxo de  camadas da tabela População PBC 
+Fluxo de camadas das tabelas -> `gold_fato_populacao_bpc`
 
-| Volume ->           | Bronze ->                                                           | Silver ->                                       | Gold                | 
+| Volume          | Bronze                                                         | Silver                                       | Gold                | 
 |---------------------|---------------------------------------------------------------------|-------------------------------------------------|--------------------|
 |  `2 arquivos csv`   |`bronze_ibge_bronze_censo_2022`/`bronze_ibge_bronze_municipios_ibge`| `silver_ibge_populacao`/`silver_municipios_ibge`| `gold_fato_populacao_bpc`| 
 
