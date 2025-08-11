@@ -49,7 +49,18 @@ O pipeline foi estruturado seguindo o modelo **Medallion Architecture (Bronze, S
 
 ![Medallion Architecture](<imagens/medallion.png>)
 
-### Camadas:
+### Por que usar arquitetura em camadas?
+
+A Medallion Architecture permite:
+
+- **Rastreabilidade**: Cada transformação tem uma origem clara, facilitando auditorias.
+- **Reprodutibilidade**: Permite fazer análises com segurança, a partir dos dados brutos.
+- **Separação da responsabilidade**: Cada camada tem um propósito distinto, facilitando manutenção e escabilidade.
+- **Versionamento lógico**: A organização em camadas ajuda a entender a evolução dos dados ao longo do pipeline.
+
+---
+
+## Camadas:
 
 ### Bronze
 - Dados brutos carregados diretamente dos arquivos CSV das fontes públicas.
@@ -106,35 +117,44 @@ Esse recorte temporal é aplicado para assegurar que a análise se concentre em 
 
   ![Dimensão UF/Região](<imagens/dim_uf.png>)
 
-### Exemplos de Uso
+#### Exemplos de Uso
 - Cálculo de cobertura por UF ao longo do tempo.
 - Comparação de prazos médios administrativos e judiciais.
 - Dashboards interativos no Power BI segmentados por região e público.
 
 ---
 
-## Fluxo de Transformação
+## Fluxo de Transformação Databricks
 
 Abaixo, o fluxo visual que mostra a transformação dos dados da camada Bronze até a Gold:
 
-- Fluxo de camadas da tabela BPC Geral e BPC por UF
+Fluxo de camadas da tabela BPC
 
-  ![Fluxo de Tranformação de tabelas](<imagens/fluxo_populacao_bpc.png>)
+- **Volume**
+  - `6 arquivos csv`
+- **Bronze**
+  - Tabela:`bronze_inss_bpc_2025_01_06`
+- **Silver**
+  - Tabela:`silver_bpc_concessoes`
+- **Gold**
+  - Tabela:`gold_fato_bpc_uf`
+  - Tabela:`gold_fato_bpc_geral`
+
+  ![Fluxo de Tranformação de tabelas](<imagens/fluxo_bpc.png>)
 
 - Fluxo de  camadas da tabela População PBC 
 
+- **Volume**
+  - `2 arquivos csv`
+- **Bronze**
+  - Tabela:`bronze_inss_bpc_2025_01_06`
+- **Silver**
+  - Tabela:`silver_bpc_concessoes`
+- **Gold**
+  - Tabela:`gold_fato_bpc_uf`
+  - Tabela:`gold_fato_bpc_geral`
+
   ![Fluxo de Tranformação de tabelas](<imagens/fluxo_populacao_bpc.png>)
-
----
-
-### Por que usar arquitetura em camadas?
-
-A Medallion Architecture permite:
-
-- **Rastreabilidade**: Cada transformação tem uma origem clara, facilitando auditorias.
-- **Reprodutibilidade**: Permite fazer análises com segurança, a partir dos dados brutos.
-- **Separação da responsabilidade**: Cada camada tem um propósito distinto, facilitando manutenção e escabilidade.
-- **Versionamento lógico**: A organização em camadas ajuda a entender a evolução dos dados ao longo do pipeline.
 
 ---
 
@@ -166,7 +186,7 @@ A Medallion Architecture permite:
 ├── 📁 dashboards
 │   └── 📸 prints_dashboards/                          # Imagens do Power BI ou links
 │
-├── 📁 images
+├── 📁 img
 │   ├── fluxo_tabelas_databricks.png                   # Fluxo visual entre tabelas
 │   └── prints_tabelas/                                # Prints detalhados por camada
 │
