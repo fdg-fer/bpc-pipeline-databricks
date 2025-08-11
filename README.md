@@ -62,19 +62,19 @@ A Medallion Architecture permite:
 
 ## Camadas:
 
-### Bronze
+### 🥉 Bronze 
 - Dados brutos carregados diretamente dos arquivos CSV das fontes públicas.
 - Pouco ou nenhum tratamento.
 - Objetivo: manter a versão original para rastreabilidade.
 
-### Silver 
+### 🥈 Silver 
 - Aplicação de regras de negócios e limpeza dos dados. 
 - Seleção de colunas relevantes, padronização de tipos, nomes e tipo de despacho (administrativo/judicial).
 
 #### Estrutura das Tabelas Silver
 - [Baixar Dicionário Silver](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/silver.xlsx)
 
-### Camada Gold
+### 🥇 Camada Gold
 
 Nesta camada, os dados já passaram por limpeza e transformações, estando prontos para **consumo final** em dashboards, relatórios e análises exploratórias.  
 A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensão, permitindo consultas otimizadas e agregações consistentes.
@@ -142,7 +142,7 @@ Fluxo de camadas da tabela BPC
 
   ![Fluxo de Tranformação de tabelas](<img/fluxo_bpc.png>)
 
-- Fluxo de  camadas da tabela População PBC 
+Fluxo de  camadas da tabela População PBC 
 
 - **Volume**
   - `2 arquivos csv`
