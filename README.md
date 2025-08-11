@@ -1,7 +1,10 @@
 %md
 
+#Objetivo do Projeto
+Este pipeline foi desenvolvido para monitorar e analisar concessões do Benefício de Prestação Continuada (BPC), com foco em pedidos cujo processo iniciou a partir de 2024 e foram concedidos entre janeiro e junho de 2025.
+A análise permite identificar padrões de concessão, prazos e cobertura territorial, fornecendo informações estratégicas para áreas como advocacia previdenciária, órgãos públicos e estudos de políticas sociais
+
 # Projeto BPC - Análise de Judicialização, Cobertura e Prazos
-_Dados de concessões BPC do primeiro semestre de 2025._
 
 O Benefício de Prestação Continuada (BPC) é um dos temas mais debatidos no âmbito da assistência social no Brasil. Voltado para pessoas idosas ou com deficiência em situação de vulnerabilidade, o BPC se diferencia de benefícios previdenciários como aposentadorias ou auxílios por incapacidade, pois não exige contribuição prévia do beneficiário. Essa característica, somada ao seu impacto social e orçamentário, o torna alvo frequente de debates políticos, ajustes fiscais e mudanças legislativas.
 
@@ -124,7 +127,7 @@ df_result.write.format("delta")\
     .saveAsTable("portfolio_inss.silver.silver_bpc_concessoes")
 ```
 
-#### Estrutura das Tabelas Silver
+#### Estrutura das Tabelas da Camada Silver
 - [Baixar Dicionário Silver](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/silver.xlsx)
 
 ---
@@ -190,7 +193,7 @@ LEFT JOIN populacao_bpc p
 spark.sql(query)
 ```
 
-#### Estrutura das Tabelas Gold
+#### Estrutura das Tabelas da Camada Gold
 - [Baixar Dicionário Gold](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/gold.xlsx)
 
 **Tabelas Fato**
@@ -263,6 +266,22 @@ Fluxo de  camadas da tabela População PBC
   ![Fluxo de Tranformação de tabelas](<img/fluxo_populacao_bpc.png>)
 
 ---
+
+
+#### Visões Gold e Regras de Negócio
+
+| Tabela                   | Descrição                                   | Regra de Negócio / Filtro                                 |
+|--------------------------|---------------------------------------------|-----------------------------------------------------------|
+| `gold_fato_bpc_geral`    | BPC concedidos granularidade mensal com share de jucialização, prazos médios     | Considera apenas processos iniciados a partir de 2024 e concedidos entre jan–jun/2025 |           
+| `gold_fato_bpc_uf_` | BPC concedidos com granularidade mensal por UF com share de jucialização, prazos médios | Considera apenas processos iniciados a partir de 2024 e concedidos entre jan–jun/2025 |
+| `gold_fato_bpc_populacao_uf` | Distribuição por público-alvo baseado na idade por UF | Sem recorte temporal                                       |
+
+
+**Observação:**  
+A distinção de recorte temporal é feita apenas em visões específicas para análises recentes. As camadas Bronze e Silver não aplicam esse filtro.
+
+---
+
 
 ## Estrutura de Pastas do Projeto
 
