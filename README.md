@@ -258,7 +258,7 @@ Fluxo de camadas das tabelas -> `gold_fato_populacao_bpc`
 ---
 
 
-#### Visões Gold e Regras de Negócio
+### Visões Gold e Regras de Negócio
 
 | Tabela                   | Descrição                                   | Regra de Negócio / Filtro                                 |
 |--------------------------|---------------------------------------------|-----------------------------------------------------------|
