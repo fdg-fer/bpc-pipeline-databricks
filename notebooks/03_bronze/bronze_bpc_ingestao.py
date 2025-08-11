@@ -1,5 +1,5 @@
 # Databricks notebook source
-# Leitura do arquivo csv
+# Leitura de todos arquivos csv da pasta benef_conced contidos no volume
 
 df = (
     spark.read.format("csv") 

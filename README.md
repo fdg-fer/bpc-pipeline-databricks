@@ -67,13 +67,67 @@ A Medallion Architecture permite:
 - Pouco ou nenhum tratamento.
 - Objetivo: manter a versão original para rastreabilidade.
 
+```
+# Leitura de todos arquivos csv da pasta benef_conced contidos no volume
+python
+df = (
+    spark.read.format("csv")
+    .option("header", "true") # se tem cabeçalho
+    .option("inferSchema", "true") # inferir o schema do arquivo csv
+    .option("delimiter", ",") # delimitador do arquivo csv
+    .option("encoding", "UTF-8")  # encoding do arquivo csv
+    .load("dbfs:/Volumes/portfolio_inss/base_bpc/raw_uploads/censo_pop_2022.csv")
+)
+
+# Grava dados do df na tabela delta na camada bronze 
+
+df.write.format("delta") \
+    .option("overwriteSchema", "true") \
+    .mode("overwrite") \
+    .saveAsTable("portfolio_inss.bronze.bronze_ibge_censo_2022")
+```
+---
+
 ### 🥈 Silver 
 - Aplicação de regras de negócios e limpeza dos dados. 
 - Seleção de colunas relevantes, padronização de tipos, nomes e tipo de despacho (administrativo/judicial).
 
+
+```
+# Leitura da tabela delta na camada bronze
+
+df = spark.table("portfolio_inss.bronze.bronze_inss_bpc_2025_01_06")
+
+
+# Renomeando colunas
+
+df = df.withColumnRenamed('competência_concessão', 'competencia')\
+       .withColumnRenamed('uf', 'uf_julgado')\
+       .withColumnRenamed('espécie4', 'beneficio')\
+       .withColumnRenamed('dt_ddb', 'dt_despacho')\
+       .withColumnRenamed('dt_dib', 'dt_inicio_beneficio')\
+       .withColumnRenamed('cid6', 'cid')  
+
+
+# Conversão de datas
+
+df = df.withColumn("competencia", to_date(expr("concat(competencia, '01')"),"yyyyMMdd"))\
+        .withColumn("dt_nascimento", to_date(df.dt_nascimento, "dd/MM/yyyy"))\
+        .withColumn("dt_despacho", to_date(df.dt_despacho, "dd/MM/yyyy"))\
+        .withColumn("dt_inicio_beneficio", to_date(df.dt_inicio_beneficio, "dd/MM/yyyy"))
+
+
+# Grava dados do df na tabela delta na camada silver
+
+df_result.write.format("delta")\
+    .mode("overwrite")\
+    .saveAsTable("portfolio_inss.silver.silver_bpc_concessoes")
+```
+
 #### Estrutura das Tabelas Silver
 - [Baixar Dicionário Silver](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/silver.xlsx)
 
+---
 ### 🥇 Camada Gold
 
 Nesta camada, os dados já passaram por limpeza e transformações, estando prontos para **consumo final** em dashboards, relatórios e análises exploratórias.  
@@ -83,6 +137,58 @@ A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensã
 - Consolidar informações calculadas e agregadas.
 - Organizar dados para fácil integração com ferramentas de BI.
 - Garantir consistência em métricas como **cobertura**, **prazos médios/medianos** e segmentações por UF e público-alvo.
+
+
+ 
+```
+# Cria a tabela púplivo alvo BPC granularidade por UF a partir do censo IBGE 2022
+# Público >= 65 BPC Idoso
+# Público < 65 BPC Deficiente
+
+query =  """
+
+CREATE OR REPLACE TABLE portfolio_inss.gold.gold_fato_populacao_bpc as(
+
+WITH 
+  bpc AS (
+      SELECT 
+        uf_final,
+        beneficio,
+        SUM(qtd_total_concedido) AS qtd_beneficio_bpc,
+        count(distinct competencia) as qtd_competencias,
+        round(qtd_beneficio_bpc/qtd_competencias, 0) as media_beneficio
+      FROM portfolio_inss.gold.gold_bpc_uf
+      where competencia >= '2025-01-01'
+      GROUP BY
+        uf_final, beneficio
+  ), 
+  populacao_bpc AS (
+      SELECT 
+        sigla_uf,
+        nome_uf,
+        SUM(CASE WHEN idade_anos < 65 THEN populacao ELSE 0 END) AS populacao_deficiente,
+        SUM(CASE WHEN idade_anos >= 65 THEN populacao ELSE 0 END) AS populacao_idosa
+      FROM portfolio_inss.silver.silver_ibge_populacao_uf
+      GROUP BY sigla_uf ,nome_uf
+  )
+SELECT 
+    p.sigla_uf,
+    b.uf_final,
+    b.beneficio,
+    b.qtd_beneficio_bpc,
+    b.media_beneficio,
+    CASE 
+        WHEN b.beneficio = 'Amp. Social Pessoa Portadora Deficiencia' THEN p.populacao_deficiente
+        WHEN b.beneficio = 'Amparo Social ao Idoso' THEN p.populacao_idosa
+        ELSE NULL
+    END AS populacao_alvo
+FROM bpc b
+LEFT JOIN populacao_bpc p
+    ON b.uf_final = p.nome_uf
+)
+"""
+spark.sql(query)
+```
 
 #### Estrutura das Tabelas Gold
 - [Baixar Dicionário Gold](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/gold.xlsx)
