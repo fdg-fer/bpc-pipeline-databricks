@@ -46,4 +46,4 @@ LEFT JOIN populacao_bpc p
     ON b.uf_final = p.nome_uf
 )
 """
-spark.sql(queey)
+spark.sql(query)

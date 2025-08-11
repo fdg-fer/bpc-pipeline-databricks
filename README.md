@@ -49,7 +49,7 @@ O pipeline foi estruturado seguindo o modelo **Medallion Architecture (Bronze, S
 
 ![Medallion Architecture](<imagens/medallion.png>)
 
-### Camadas:
+## Camadas:
 
 ### Bronze
 - Dados brutos carregados diretamente dos arquivos CSV das fontes públicas.
@@ -106,14 +106,14 @@ Esse recorte temporal é aplicado para assegurar que a análise se concentre em 
 
   ![Dimensão UF/Região](<imagens/dim_uf.png>)
 
-### Exemplos de Uso
+#### Exemplos de Uso
 - Cálculo de cobertura por UF ao longo do tempo.
 - Comparação de prazos médios administrativos e judiciais.
 - Dashboards interativos no Power BI segmentados por região e público.
 
 ---
 
-## Fluxo de Transformação
+## Fluxo de Transformação Databricks
 
 Abaixo, o fluxo visual que mostra a transformação dos dados da camada Bronze até a Gold:
 
