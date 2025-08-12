@@ -281,9 +281,9 @@ Fluxo de camadas das tabelas -> `gold_fato_bpc_geral` e `gold_fato_bpc_uf`
 
 Fluxo de camadas das tabelas -> `gold_fato_populacao_bpc`
 
-| Volume          | Bronze                                                         | Silver                                       | Gold                | 
-|:---------------------:|:---------------------------------------------------------------------:|-------------------------------------------------:|:--------------------:|
-|  `2 arquivos csv`   |`bronze_ibge_bronze_censo_2022`/`bronze_ibge_bronze_municipios_ibge`| `silver_ibge_populacao`/`silver_municipios_ibge`| `gold_fato_populacao_bpc`| 
+| Volume                | Bronze                                                             | Silver                                          | Gold                 | 
+|:---------------------:|:------------------------------------------------------------------:|:-----------------------------------------------:|:--------------------:|
+|  `2 arquivos csv`     |`bronze_ibge_bronze_censo_2022`/`bronze_ibge_bronze_municipios_ibge`| `silver_ibge_populacao`/`silver_municipios_ibge`| `gold_fato_populacao_bpc`| 
 
 
   ![Fluxo de Tranformação de tabelas](<img/fluxo_populacao_bpc.png>)
