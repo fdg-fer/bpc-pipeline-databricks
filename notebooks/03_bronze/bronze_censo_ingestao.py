@@ -6,7 +6,7 @@ df = (
     .option("header", "true") # se tem cabeçalho
     .option("inferSchema", "true") # inferir o schema do arquivo csv
     .option("delimiter", ",") # delimitador do arquivo csv
-    .option("encoding", "UTF-8")  # se já é UTF-8, use isso explicitamente
+    .option("encoding", "UTF-8")  # encoding do arquivo csv
     .load("dbfs:/Volumes/portfolio_inss/base_bpc/raw_uploads/censo_pop_2022.csv")
 )
 

@@ -1,7 +1,4 @@
-%md
-
 # Projeto BPC - Análise de Judicialização, Cobertura e Prazos
-_Dados de concessões BPC do primeiro semestre de 2025._
 
 O Benefício de Prestação Continuada (BPC) é um dos temas mais debatidos no âmbito da assistência social no Brasil. Voltado para pessoas idosas ou com deficiência em situação de vulnerabilidade, o BPC se diferencia de benefícios previdenciários como aposentadorias ou auxílios por incapacidade, pois não exige contribuição prévia do beneficiário. Essa característica, somada ao seu impacto social e orçamentário, o torna alvo frequente de debates políticos, ajustes fiscais e mudanças legislativas.
 
@@ -17,6 +14,11 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 
 ---
 
+# Objetivo do Projeto
+Este pipeline foi desenvolvido para monitorar e analisar concessões do Benefício de Prestação Continuada (BPC), com foco em pedidos cujo processo iniciou a partir de 2024 e foram concedidos entre janeiro e junho de 2025.
+A análise permite identificar padrões de concessão, prazos e cobertura territorial, fornecendo informações estratégicas para áreas como advocacia previdenciária, órgãos públicos e estudos de políticas sociais
+---
+
 ## Tecnologias Utilizadas 
 
 - **Databricks Free Edition** (ambiente de notebooks)
@@ -30,7 +32,7 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 
 Os dados utilizados no projeto foram extraídos de três principais fontes púplicas:
 
-- **INSS**: Tabela de concessões do BPC por mês, disponível em csv.
+- **INSS**: Dados de concessões do BPC por mês, disponível em csv.
  [Fonte: INSS - Dados Abertos](https://dadosabertos.inss.gov.br/dataset/beneficios-concedidos-plano-de-dados-abertos-jun-2023-a-jun-2025)
   - Quantidade de arquivos: 6 cvs - Concessões de jan/25 a jun/25
 
@@ -38,7 +40,7 @@ Os dados utilizados no projeto foram extraídos de três principais fontes púpl
   [Fonte: Censo IBGE 2022](https://www.ibge.gov.br/estatisticas/sociais/trabalho/22827-censo-demografico-2022.html?=&t=downloads/)
   - Quantidade de arquivos: 1 csv
 
-- **Municípios/UF/Região**: Tabela de referência com códigos de municípios, sigla UF e região geográfica.  
+- **Municípios/UF/Região**: Dados de referência com códigos de municípios, sigla UF e região geográfica.  
   [Fonte: IBGE – Tabela de Referência Territorial](https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais/15774-malhas.html/)
   - Quantidade de arquivos: 1 csv
 
@@ -47,7 +49,7 @@ Os dados utilizados no projeto foram extraídos de três principais fontes púpl
 ## Arquitetura de dados
 O pipeline foi estruturado seguindo o modelo **Medallion Architecture (Bronze, Silver, Gold)** que facilita a rastreabilidade, versionamento e reutilização dos dados em múltiplos estágios.
 
-![Medallion Architecture](<imagens/medallion.png>)
+![Medallion Architecture](<img/medallion.png>)
 
 ### Por que usar arquitetura em camadas?
 
@@ -62,19 +64,87 @@ A Medallion Architecture permite:
 
 ## Camadas:
 
-### Bronze
+### 🥉 Bronze 
 - Dados brutos carregados diretamente dos arquivos CSV das fontes públicas.
 - Pouco ou nenhum tratamento.
 - Objetivo: manter a versão original para rastreabilidade.
 
-### Silver 
+```
+# Leitura de todos arquivos csv da pasta benef_conced contidos no volume
+
+df = (
+    spark.read.format("csv") 
+    .option("header", "true") # se tem cabeçalho
+    .option("inferSchema", "true") # inferir o schema do arquivo csv
+    .option("delimiter", ";") # delimitador do arquivo csv
+    .option("encoding", "UTF-8")  # encoding do arquivo csv
+    .load("dbfs:/Volumes/portfolio_inss/base_bpc/benef_conced/")
+)
+
+from pyspark.sql import functions as F  # Importa funções do PySpark
+import re  # Módulo para operações com expressões regulares 
+
+def limpar_nome_coluna(nome):
+    
+    nome = nome.strip() # Remove espaços no início/fim
+    nome = re.sub(r"[ ,{}()\n\t=]", "_", nome) # Substitui caracteres especiais por underscore
+    nome = re.sub(r"__+", "_", nome) # Remove underscores consecutivos
+    nome = nome.strip("_") # Remove underscores no início/fim
+    return nome.lower() # Converte tudo para minúsculas
+
+# Aplica a função a todas as colunas do DataFrame
+df = df.select([F.col(c).alias(limpar_nome_coluna(c)) for c in df.columns]) # Renomeia as colunas
+
+
+# Grava dados do df na tabela delta na camada bronze 
+
+df.write.format("delta") \
+    .mode("overwrite") \
+    .saveAsTable("portfolio_inss.bronze.bronze_inss_bpc_2025_01_06")
+```
+---
+
+### 🥈 Silver 
 - Aplicação de regras de negócios e limpeza dos dados. 
 - Seleção de colunas relevantes, padronização de tipos, nomes e tipo de despacho (administrativo/judicial).
 
-#### Estrutura das Tabelas Silver
+
+```
+# Leitura da tabela delta na camada bronze
+
+df = spark.table("portfolio_inss.bronze.bronze_inss_bpc_2025_01_06")
+
+
+# Renomeando colunas
+
+df = df.withColumnRenamed('competência_concessão', 'competencia')\
+       .withColumnRenamed('uf', 'uf_julgado')\
+       .withColumnRenamed('espécie4', 'beneficio')\
+       .withColumnRenamed('dt_ddb', 'dt_despacho')\
+       .withColumnRenamed('dt_dib', 'dt_inicio_beneficio')\
+       .withColumnRenamed('cid6', 'cid')  
+
+
+# Conversão de datas
+
+df = df.withColumn("competencia", to_date(expr("concat(competencia, '01')"),"yyyyMMdd"))\
+        .withColumn("dt_nascimento", to_date(df.dt_nascimento, "dd/MM/yyyy"))\
+        .withColumn("dt_despacho", to_date(df.dt_despacho, "dd/MM/yyyy"))\
+        .withColumn("dt_inicio_beneficio", to_date(df.dt_inicio_beneficio, "dd/MM/yyyy"))
+
+
+# Grava dados do df na tabela delta na camada silver
+
+df_result.write.format("delta")\
+    .mode("overwrite")\
+    .saveAsTable("portfolio_inss.silver.silver_bpc_concessoes")
+```
+
+#### Estrutura das Tabelas da Camada Silver
 - [Baixar Dicionário Silver](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/silver.xlsx)
 
-### Camada Gold
+---
+### 🥇 Camada Gold
 
 Nesta camada, os dados já passaram por limpeza e transformações, estando prontos para **consumo final** em dashboards, relatórios e análises exploratórias.  
 A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensão, permitindo consultas otimizadas e agregações consistentes.
@@ -84,7 +154,71 @@ A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensã
 - Organizar dados para fácil integração com ferramentas de BI.
 - Garantir consistência em métricas como **cobertura**, **prazos médios/medianos** e segmentações por UF e público-alvo.
 
-#### Estrutura das Tabelas Gold
+
+ 
+```
+# Cria na camada gold a tabela fato_bpc_geral com granularidade por competência
+
+query = """
+
+CREATE OR REPLACE TABLE portfolio_inss.gold.gold_fato_bpc_geral (
+USING DELTA
+
+  WITH 
+  -- Cálculo dos prazos médios por tipo
+  
+  prazo_medio AS (
+    SELECT
+      competencia,
+      beneficio,
+      tipo_despacho,
+      ROUND(avg(dias_ate_despacho), 1) AS prazo_medio,
+      ROUND(median(dias_ate_despacho), 1) AS prazo_mediana
+    FROM portfolio_inss.silver.silver_bpc_concessoes
+    WHERE dt_inicio_beneficio >= '2024-01-01'
+    GROUP BY competencia, beneficio, tipo_despacho
+  ),
+
+  -- Cálculo da quantidade por tipo
+  qtd_processos AS (
+    SELECT
+      competencia,
+      beneficio,
+      SUM(CASE WHEN tipo_despacho = 'administrativo' THEN 1 ELSE 0 END) AS qtd_administrativo,
+      SUM(CASE WHEN tipo_despacho = 'judicial' THEN 1 ELSE 0 END) AS qtd_judicial
+    FROM portfolio_inss.silver.silver_bpc_concessoes
+    WHERE dt_inicio_beneficio >= '2024-01-01'
+    GROUP BY competencia, beneficio
+  )
+
+  -- Tabela final
+  SELECT
+    q.competencia,
+    q.beneficio,
+    q.qtd_administrativo,
+    q.qtd_judicial,
+    (q.qtd_administrativo + q.qtd_judicial) AS qtd_total_concedido,
+    ROUND(q.qtd_judicial / NULLIF((q.qtd_administrativo + q.qtd_judicial), 0), 3) AS pct_judicializacao,
+    MAX(CASE WHEN p.tipo_despacho = 'administrativo' THEN p.prazo_mediana END) AS prazo_mediana_adm,
+    MAX(CASE WHEN p.tipo_despacho = 'judicial' THEN p.prazo_medio END) AS prazo_medio_jud
+  FROM qtd_processos q
+  LEFT JOIN prazo_medio p 
+    ON q.competencia = p.competencia 
+    AND q.beneficio = p.beneficio
+  GROUP BY 
+    q.competencia,
+    q.beneficio,
+    q.qtd_administrativo,
+    q.qtd_judicial
+  ORDER BY
+   q.competencia,
+   q.beneficio
+)
+"""
+spark.sql(query)
+```
+
+#### Estrutura das Tabelas da Camada Gold
 - [Baixar Dicionário Gold](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/gold.xlsx)
 
 **Tabelas Fato**
@@ -94,28 +228,28 @@ Esse recorte temporal é aplicado para assegurar que a análise se concentre em 
 
 - **Fato BPC Geral** – Dados consolidados do BPC em nível nacional, com métricas de cobertura e prazos.
 
-  ![Fato BPC Geral](<imagens/fato_bpc_geral.png>)
+  ![Fato BPC Geral](<img/fato_bpc_geral.png>)
 
 - **Fato BPC por UF** – Mesma granularidade da tabela geral, mas segmentada por Unidade Federativa.
 
-  ![Fato BPC por UF](<imagens/fato_bpc_uf.png>) 
+  ![Fato BPC por UF](<img/fato_bpc_uf.png>) 
 
 - **Fato População/Público-alvo** – Informações demográficas e quantitativas sobre o público-alvo do benefício.
 
-  ![Fato População](<imagens/fato_populacao.png>)
+  ![Fato População](<img/fato_populacao.png>)
 
 **Tabelas Dimensão**
 - **Dimensão Calendário** – Datas de referência para análises temporais (ano, mês, trimestre, etc.).
 
-  ![Dimensão Calendário](<imagens/dim_calendario.png>)
+  ![Dimensão Calendário](<img/dim_calendario.png>)
 
 - **Dimensão Benefício** – Classificação e tipo de benefício dentro do BPC.
 
-  ![Dimensão Benefício](<imagens/dim_beneficio.png>)
+  ![Dimensão Benefício](<img/dim_beneficio.png>)
 
 - **Dimensão UF/Região** – Mapeamento de Unidades Federativas para suas respectivas regiões.
 
-  ![Dimensão UF/Região](<imagens/dim_uf.png>)
+  ![Dimensão UF/Região](<img/dim_regiao.png>)
 
 #### Exemplos de Uso
 - Cálculo de cobertura por UF ao longo do tempo.
@@ -128,75 +262,91 @@ Esse recorte temporal é aplicado para assegurar que a análise se concentre em 
 
 Abaixo, o fluxo visual que mostra a transformação dos dados da camada Bronze até a Gold:
 
-Fluxo de camadas da tabela BPC
+Fluxo de camadas das tabelas -> `gold_fato_bpc_geral` e `gold_fato_bpc_uf`
 
-- **Volume**
-  - `6 arquivos csv`
-- **Bronze**
-  - Tabela:`bronze_inss_bpc_2025_01_06`
-- **Silver**
-  - Tabela:`silver_bpc_concessoes`
-- **Gold**
-  - Tabela:`gold_fato_bpc_uf`
-  - Tabela:`gold_fato_bpc_geral`
 
-  ![Fluxo de Tranformação de tabelas](<imagens/fluxo_bpc.png>)
+| Volume               | Bronze                          | Silver                  | Gold                                  |
+|:--------------------:|:-------------------------------:|:-----------------------:|:-------------------------------------:|
+| `6 arquivos csv`     | `bronze_inss_bpc_2025_01_06`    | `silver_bpc_concessoes` | `gold_fato_bpc_uf` / `gold_fato_bpc_geral` |
 
-- Fluxo de  camadas da tabela População PBC 
 
-- **Volume**
-  - `2 arquivos csv`
-- **Bronze**
-  - Tabela:`bronze_inss_bpc_2025_01_06`
-- **Silver**
-  - Tabela:`silver_bpc_concessoes`
-- **Gold**
-  - Tabela:`gold_fato_bpc_uf`
-  - Tabela:`gold_fato_bpc_geral`
+  ![Fluxo de Tranformação de tabelas](<img/fluxo_bpc.png>)
 
-  ![Fluxo de Tranformação de tabelas](<imagens/fluxo_populacao_bpc.png>)
+
+Fluxo de camadas das tabelas -> `gold_fato_populacao_bpc`
+
+| Volume          | Bronze                                                         | Silver                                       | Gold                | 
+|---------------------|---------------------------------------------------------------------|-------------------------------------------------|--------------------|
+|  `2 arquivos csv`   |`bronze_ibge_bronze_censo_2022`/`bronze_ibge_bronze_municipios_ibge`| `silver_ibge_populacao`/`silver_municipios_ibge`| `gold_fato_populacao_bpc`| 
+
+
+  ![Fluxo de Tranformação de tabelas](<img/fluxo_populacao_bpc.png>)
 
 ---
 
-## Estrutura de Pastas do Projeto (para GitHub)
+
+### Visões Gold e Regras de Negócio
+
+| Tabela                   | Descrição                                   | Regra de Negócio / Filtro                                 |
+|--------------------------|---------------------------------------------|-----------------------------------------------------------|
+| `gold_fato_bpc_geral`    | BPC concedidos granularidade mensal com share de jucialização, prazos médios     | Considera apenas processos iniciados a partir de 2024 e concedidos entre jan–jun/2025 |           
+| `gold_fato_bpc_uf_` | BPC concedidos com granularidade mensal por UF com share de jucialização, prazos médios | Considera apenas processos iniciados a partir de 2024 e concedidos entre jan–jun/2025 |
+| `gold_fato_bpc_populacao_uf` | Distribuição por público-alvo baseado na idade por UF | Sem recorte temporal                                       |
+
+
+**Observação:**  
+A distinção de recorte temporal é feita apenas em visões específicas para análises recentes. As camadas Bronze e Silver não aplicam esse filtro.
+
+
+#### Modelagem Star Schema - Power BI
+
+  ![Fluxo de Tranformação de tabelas](<img/schema_pbi.png>)
+
+
+#### Dashboard 
+
+- Visão que mostra o cenário nacional ao longo dos meses por Tipo de Benefício.
+
+  ![Fluxo de Tranformação de tabelas](<dashboard/visao_nacional.png>)
+
+- Visão que mostra o cenário regional ao longo dos meses por Tipo de Benefício.
+
+  ![Fluxo de Tranformação de tabelas](<dashboard/visao_nacional.png>)
+---
+
+## Estrutura de Pastas do Projeto
 
 ```
 📦 bpc-databricks-pipeline
 │
 ├── 📁 notebooks
 │   ├── 📁 bronze
-│   │   ├── 🐍 bronze_bpc_ingestao.ipynb           # PySpark - CSV do BPC → bronze
-│   │   ├── 🐍 bronze_censo_ingestao.ipynb         # PySpark - CSV do Censo → bronze
-│   │   └── 🐍 bronze_uf_municipios_ingestao.ipynb # PySpark - CSV de UF → bronze
+│   │   ├── bronze_bpc_ingestao.ipynb           # PySpark - CSV do BPC → bronze
+│   │   ├── bronze_censo_ingestao.ipynb         # PySpark - CSV do Censo → bronze
+│   │   └── bronze_uf_municipios_ingestao.ipynb # PySpark - CSV de UF → bronze
 │   │
 │   ├── 📁 silver
-│   │   ├── 🐍 silver_bpc_concessoes.ipynb              # PySpark - Tratamento BPC
-│   │   ├── 🐍 silver_censo_tratado.ipynb              # PySpark - População tratada
-│   │   ├── 🐍 silver_uf_regiao_tratado.ipynb          # PySpark - UF e região
-│   │   └── 📝 silver_populacao_bpc.sql                # SQL - União para gerar população BPC
+│   │   ├── silver_bpc_concessoes.ipynb              # PySpark - Tratamento BPC
+│   │   ├── silver_censo_tratado.ipynb              # PySpark - População tratada
+│   │   ├── silver_uf_regiao_tratado.ipynb          # PySpark - UF e região
+│   │   └── silver_populacao_bpc.sql                # SQL - União para gerar população BPC
 │   │
 │   ├── 📁 gold
-│   │   ├── 📝 gold_fato_bpc_uf.sql                    # SQL - Fato por UF
-│   │   ├── 📝 gold_fato_bpc_geral.sql                 # SQL - Fato geral
-│   │   ├── 📝 gold_dim_uf_regiao.sql                  # SQL - Dimensão UF
-│   │   ├── 📝 gold_dim_beneficio.sql                  # SQL - Dimensão benefício
-│   │   ├── 📝 gold_dim_calendario.sql                 # SQL - Dimensão calendário
-│   │   └── 📝 gold_dim_populacao.sql                  # SQL - População/público-alvo
-│
+│   │   ├── gold_fato_bpc_uf.sql                    # SQL - Fato por UF
+│   │   ├── gold_fato_bpc_geral.sql                 # SQL - Fato geral
+│   │   ├── gold_dim_uf_regiao.sql                  # SQL - Dimensão UF
+│   │   ├── gold_dim_populacao.sql                  # SQL - População/público-alvo
+│   │   ├── gold_dim_beneficio.sql                  # SQL - Dimensão benefício
+│   │   └── gold_dim_calendario.sql                 # SQL - Dimensão calendário
+│   │
 ├── 📁 dashboards
-│   └── 📸 prints_dashboards/                          # Imagens do Power BI ou links
+│   └── prints_dashboards/                          # Imagens do Power BI ou links
 │
 ├── 📁 img
 │   ├── fluxo_tabelas_databricks.png                   # Fluxo visual entre tabelas
 │   └── prints_tabelas/                                # Prints detalhados por camada
 │
-├── 📁 docs
-│   ├── README_engenharia.md                           # Parte técnica do projeto
-│   ├── README_negocio.md                              # Parte de negócio e objetivo
-│   ├── metodologia.md                                 # Detalhes de abordagem
-│   └── dicionario_dados.md                            # Campos por tabela e camada
-│
-└── README.md                                          # Visão geral do projeto (linkando os outros)
+└── README.md                                          # Visão geral do projeto
 
 ```
 

@@ -1,5 +1,5 @@
 # Databricks notebook source
-# Leitura do arquivo csv
+# Leitura de todos arquivos csv da pasta benef_conced contidos no volume
 
 df = (
     spark.read.format("csv") 
@@ -13,21 +13,26 @@ df = (
 
 # COMMAND ----------
 
-# Biblioteca regex e funções pyspark
-
-from pyspark.sql import functions as F
-import re
-
-# Remove dos nomes das colunas espaços extras, caracteres especiais e deixa em minúsculas 
+from pyspark.sql import functions as F  # Importa funções do PySpark
+import re  # Módulo para operações com expressões regulares 
 
 def limpar_nome_coluna(nome):
-    
+    # 1. Remove espaços no início/fim
     nome = nome.strip()
-    nome = re.sub(r"[ ,{}()\n\t=]", "_", nome)   # Substitui por "_"
-    nome = re.sub(r"__+", "_", nome)              # Evita múltiplos "__"
-    nome = nome.strip("_")                        # Remove "_" do início e fim
+    
+    # 2. Substitui caracteres especiais por underscore
+    nome = re.sub(r"[ ,{}()\n\t=]", "_", nome)
+    
+    # 3. Remove underscores consecutivos
+    nome = re.sub(r"__+", "_", nome)
+    
+    # 4. Remove underscores no início/fim
+    nome = nome.strip("_")
+    
+    # 5. Converte tudo para minúsculas
     return nome.lower()
 
+# Aplica a função a todas as colunas do DataFrame
 df = df.select([F.col(c).alias(limpar_nome_coluna(c)) for c in df.columns]) # Renomeia as colunas
 
 # COMMAND ----------
