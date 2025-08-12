@@ -317,9 +317,9 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
 
   ![Fluxo de Tranformação de tabelas](<dashboard/visao_nacional.png>)
 
-  A visão que mostra o cenário regional ao longo dos meses por Tipo de Benefício revela alguns pontos importantes na região Sul. Em Santa Catarina, o número absoluto de concessões do BPC Idoso é o menor entre os estados da região. Além disso, a cobertura por mil habitantes também é relativamente baixa, o que pode revelar uma demanda subatendida.
+  A visão que mostra o cenário regional ao longo dos meses por Tipo de Benefício revela alguns pontos importantes na região Sul. Em Santa Catarina, o número absoluto de concessões do BPC Idoso é o menor entre os estados da região. Além disso, a cobertura por mil habitantes também é de 0,45 relativamente baixa, o que pode revelar uma demanda subatendida.
 
-  Chama atenção, ainda, a judicialização relativamente alta nesse tipo de benefício, mesmo considerando que o BPC Idoso possui uma legislação mais objetiva e com prazos mais curtos, o que normalmente resulta em maior proporção de concessões administrativas.
+  Chama atenção, ainda, a judicialização relativamente alta nesse tipo de benefício próximo dos 7%, considerando que o BPC Idoso possui uma legislação mais objetiva e com prazos mais curtos, o que normalmente resulta em maior proporção de concessões administrativas.
 
   Esse cenário indica uma possível maior necessidade de representação profissional para os beneficiários do BPC Idoso em Santa Catarina, evidenciando uma oportunidade de negócio para serviços especializados de assessoria jurídica voltados para essa demanda.
 
@@ -334,12 +334,12 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
 │
 ├── 📁 notebooks
 │   ├── 📁 bronze
-│   │   ├── bronze_bpc_ingestao.ipynb           # PySpark - CSV do BPC → bronze
-│   │   ├── bronze_censo_ingestao.ipynb         # PySpark - CSV do Censo → bronze
-│   │   └── bronze_uf_municipios_ingestao.ipynb # PySpark - CSV de UF → bronze
+│   │   ├── bronze_bpc_ingestao.ipynb              # PySpark - CSV do BPC → bronze
+│   │   ├── bronze_censo_ingestao.ipynb            # PySpark - CSV do Censo → bronze
+│   │   └── bronze_uf_municipios_ingestao.ipynb    # PySpark - CSV de UF → bronze
 │   │
 │   ├── 📁 silver
-│   │   ├── silver_bpc_concessoes.ipynb              # PySpark - Tratamento BPC
+│   │   ├── silver_bpc_concessoes.ipynb             # PySpark - Tratamento BPC
 │   │   ├── silver_censo_tratado.ipynb              # PySpark - População tratada
 │   │   ├── silver_uf_regiao_tratado.ipynb          # PySpark - UF e região
 │   │   └── silver_populacao_bpc.sql                # SQL - União para gerar população BPC
@@ -353,13 +353,17 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
 │   │   └── gold_dim_calendario.sql                 # SQL - Dimensão calendário
 │   │
 ├── 📁 dashboards
-│   └── prints_dashboards/                          # Imagens do Power BI ou links
+│   └── prints_dashboards/                          # Imagens do Power BI
+│
+├── 📁 dic
+│   └── dicionário_dados/                           # Arquivos excel com dicionários de dados
 │
 ├── 📁 img
-│   ├── fluxo_tabelas_databricks.png                   # Fluxo visual entre tabelas
-│   └── prints_tabelas/                                # Prints detalhados por camada
-│
-└── README.md                                          # Visão geral do projeto
+│   ├── fluxo_tabelas_databricks.png                # Fluxo visual entre tabelas
+│   └── prints_tabelas/                             # Prints detalhados por camada
+│ 
+├── exploratoria_prazos.ipynb
+└── README.md                                       # Visão geral do projeto
 
 ```
 
