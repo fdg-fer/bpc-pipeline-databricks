@@ -305,13 +305,21 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
 
 #### Dashboard 
 
-- Visão que mostra o cenário nacional ao longo dos meses por Tipo de Benefício.
+  No painel, os cards mostram que o prazo judicial teve um aumento de 17% no segundo semestre em relação ao primeiro, refletindo uma tendência de crescimento mensal constante, conforme a tabela detalhada.
+  A concessão administrativa também cresceu 12% do primeiro para o segundo trimestre.
+
+  Esses indicadores evidenciam uma pressão crescente tanto na via judicial quanto administrativa, importante para o gestor acompanhar e ajustar estratégias no escritório.
 
   ![Fluxo de Tranformação de tabelas](<dashboard/visao_nacional.png>)
 
-- Visão que mostra o cenário regional ao longo dos meses por Tipo de Benefício.
+  A visão que mostra o cenário regional ao longo dos meses por Tipo de Benefício revela alguns pontos importantes na região Sul. Em Santa Catarina, o número absoluto de concessões do BPC Idoso é o menor entre os estados da região. Além disso, a cobertura por mil habitantes também é relativamente baixa, o que pode revelar uma demanda subatendida.
+
+  Chama atenção, ainda, a judicialização relativamente alta nesse tipo de benefício, mesmo considerando que o BPC Idoso possui uma legislação mais objetiva e com prazos mais curtos, o que normalmente resulta em maior proporção de concessões administrativas.
+
+  Esse cenário indica uma possível maior necessidade de representação profissional para os beneficiários do BPC Idoso em Santa Catarina, evidenciando uma oportunidade de negócio para serviços especializados de assessoria jurídica voltados para essa demanda.
 
   ![Fluxo de Tranformação de tabelas](<dashboard/visao_regional.png>)
+
 ---
 
 ## Estrutura de Pastas do Projeto
