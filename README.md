@@ -1,7 +1,3 @@
-# Objetivo do Projeto
-Este pipeline foi desenvolvido para monitorar e analisar concessões do Benefício de Prestação Continuada (BPC), com foco em pedidos cujo processo iniciou a partir de 2024 e foram concedidos entre janeiro e junho de 2025.
-A análise permite identificar padrões de concessão, prazos e cobertura territorial, fornecendo informações estratégicas para áreas como advocacia previdenciária, órgãos públicos e estudos de políticas sociais
-
 # Projeto BPC - Análise de Judicialização, Cobertura e Prazos
 
 O Benefício de Prestação Continuada (BPC) é um dos temas mais debatidos no âmbito da assistência social no Brasil. Voltado para pessoas idosas ou com deficiência em situação de vulnerabilidade, o BPC se diferencia de benefícios previdenciários como aposentadorias ou auxílios por incapacidade, pois não exige contribuição prévia do beneficiário. Essa característica, somada ao seu impacto social e orçamentário, o torna alvo frequente de debates políticos, ajustes fiscais e mudanças legislativas.
@@ -18,6 +14,11 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 
 ---
 
+# Objetivo do Projeto
+Este pipeline foi desenvolvido para monitorar e analisar concessões do Benefício de Prestação Continuada (BPC), com foco em pedidos cujo processo iniciou a partir de 2024 e foram concedidos entre janeiro e junho de 2025.
+A análise permite identificar padrões de concessão, prazos e cobertura territorial, fornecendo informações estratégicas para áreas como advocacia previdenciária, órgãos públicos e estudos de políticas sociais
+---
+
 ## Tecnologias Utilizadas 
 
 - **Databricks Free Edition** (ambiente de notebooks)
@@ -31,7 +32,7 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 
 Os dados utilizados no projeto foram extraídos de três principais fontes púplicas:
 
-- **INSS**: Tabela de concessões do BPC por mês, disponível em csv.
+- **INSS**: Dados de concessões do BPC por mês, disponível em csv.
  [Fonte: INSS - Dados Abertos](https://dadosabertos.inss.gov.br/dataset/beneficios-concedidos-plano-de-dados-abertos-jun-2023-a-jun-2025)
   - Quantidade de arquivos: 6 cvs - Concessões de jan/25 a jun/25
 
@@ -39,7 +40,7 @@ Os dados utilizados no projeto foram extraídos de três principais fontes púpl
   [Fonte: Censo IBGE 2022](https://www.ibge.gov.br/estatisticas/sociais/trabalho/22827-censo-demografico-2022.html?=&t=downloads/)
   - Quantidade de arquivos: 1 csv
 
-- **Municípios/UF/Região**: Tabela de referência com códigos de municípios, sigla UF e região geográfica.  
+- **Municípios/UF/Região**: Dados de referência com códigos de municípios, sigla UF e região geográfica.  
   [Fonte: IBGE – Tabela de Referência Territorial](https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais/15774-malhas.html/)
   - Quantidade de arquivos: 1 csv
 
@@ -70,22 +71,36 @@ A Medallion Architecture permite:
 
 ```
 # Leitura de todos arquivos csv da pasta benef_conced contidos no volume
-python
+
 df = (
-    spark.read.format("csv")
+    spark.read.format("csv") 
     .option("header", "true") # se tem cabeçalho
     .option("inferSchema", "true") # inferir o schema do arquivo csv
-    .option("delimiter", ",") # delimitador do arquivo csv
+    .option("delimiter", ";") # delimitador do arquivo csv
     .option("encoding", "UTF-8")  # encoding do arquivo csv
-    .load("dbfs:/Volumes/portfolio_inss/base_bpc/raw_uploads/censo_pop_2022.csv")
+    .load("dbfs:/Volumes/portfolio_inss/base_bpc/benef_conced/")
 )
+
+from pyspark.sql import functions as F  # Importa funções do PySpark
+import re  # Módulo para operações com expressões regulares 
+
+def limpar_nome_coluna(nome):
+    
+    nome = nome.strip() # Remove espaços no início/fim
+    nome = re.sub(r"[ ,{}()\n\t=]", "_", nome) # Substitui caracteres especiais por underscore
+    nome = re.sub(r"__+", "_", nome) # Remove underscores consecutivos
+    nome = nome.strip("_") # Remove underscores no início/fim
+    return nome.lower() # Converte tudo para minúsculas
+
+# Aplica a função a todas as colunas do DataFrame
+df = df.select([F.col(c).alias(limpar_nome_coluna(c)) for c in df.columns]) # Renomeia as colunas
+
 
 # Grava dados do df na tabela delta na camada bronze 
 
 df.write.format("delta") \
-    .option("overwriteSchema", "true") \
     .mode("overwrite") \
-    .saveAsTable("portfolio_inss.bronze.bronze_ibge_censo_2022")
+    .saveAsTable("portfolio_inss.bronze.bronze_inss_bpc_2025_01_06")
 ```
 ---
 
@@ -142,50 +157,62 @@ A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensã
 
  
 ```
-# Cria a tabela púplivo alvo BPC granularidade por UF a partir do censo IBGE 2022
-# Público >= 65 BPC Idoso
-# Público < 65 BPC Deficiente
+# Cria na camada gold a tabela fato_bpc_geral com granularidade por competência
 
-query =  """
+query = """
 
-CREATE OR REPLACE TABLE portfolio_inss.gold.gold_fato_populacao_bpc as(
+CREATE OR REPLACE TABLE portfolio_inss.gold.gold_fato_bpc_geral (
+USING DELTA
 
-WITH 
-  bpc AS (
-      SELECT 
-        uf_final,
-        beneficio,
-        SUM(qtd_total_concedido) AS qtd_beneficio_bpc,
-        count(distinct competencia) as qtd_competencias,
-        round(qtd_beneficio_bpc/qtd_competencias, 0) as media_beneficio
-      FROM portfolio_inss.gold.gold_bpc_uf
-      where competencia >= '2025-01-01'
-      GROUP BY
-        uf_final, beneficio
-  ), 
-  populacao_bpc AS (
-      SELECT 
-        sigla_uf,
-        nome_uf,
-        SUM(CASE WHEN idade_anos < 65 THEN populacao ELSE 0 END) AS populacao_deficiente,
-        SUM(CASE WHEN idade_anos >= 65 THEN populacao ELSE 0 END) AS populacao_idosa
-      FROM portfolio_inss.silver.silver_ibge_populacao_uf
-      GROUP BY sigla_uf ,nome_uf
+  WITH 
+  -- Cálculo dos prazos médios por tipo
+  
+  prazo_medio AS (
+    SELECT
+      competencia,
+      beneficio,
+      tipo_despacho,
+      ROUND(avg(dias_ate_despacho), 1) AS prazo_medio,
+      ROUND(median(dias_ate_despacho), 1) AS prazo_mediana
+    FROM portfolio_inss.silver.silver_bpc_concessoes
+    WHERE dt_inicio_beneficio >= '2024-01-01'
+    GROUP BY competencia, beneficio, tipo_despacho
+  ),
+
+  -- Cálculo da quantidade por tipo
+  qtd_processos AS (
+    SELECT
+      competencia,
+      beneficio,
+      SUM(CASE WHEN tipo_despacho = 'administrativo' THEN 1 ELSE 0 END) AS qtd_administrativo,
+      SUM(CASE WHEN tipo_despacho = 'judicial' THEN 1 ELSE 0 END) AS qtd_judicial
+    FROM portfolio_inss.silver.silver_bpc_concessoes
+    WHERE dt_inicio_beneficio >= '2024-01-01'
+    GROUP BY competencia, beneficio
   )
-SELECT 
-    p.sigla_uf,
-    b.uf_final,
-    b.beneficio,
-    b.qtd_beneficio_bpc,
-    b.media_beneficio,
-    CASE 
-        WHEN b.beneficio = 'Amp. Social Pessoa Portadora Deficiencia' THEN p.populacao_deficiente
-        WHEN b.beneficio = 'Amparo Social ao Idoso' THEN p.populacao_idosa
-        ELSE NULL
-    END AS populacao_alvo
-FROM bpc b
-LEFT JOIN populacao_bpc p
-    ON b.uf_final = p.nome_uf
+
+  -- Tabela final
+  SELECT
+    q.competencia,
+    q.beneficio,
+    q.qtd_administrativo,
+    q.qtd_judicial,
+    (q.qtd_administrativo + q.qtd_judicial) AS qtd_total_concedido,
+    ROUND(q.qtd_judicial / NULLIF((q.qtd_administrativo + q.qtd_judicial), 0), 3) AS pct_judicializacao,
+    MAX(CASE WHEN p.tipo_despacho = 'administrativo' THEN p.prazo_mediana END) AS prazo_mediana_adm,
+    MAX(CASE WHEN p.tipo_despacho = 'judicial' THEN p.prazo_medio END) AS prazo_medio_jud
+  FROM qtd_processos q
+  LEFT JOIN prazo_medio p 
+    ON q.competencia = p.competencia 
+    AND q.beneficio = p.beneficio
+  GROUP BY 
+    q.competencia,
+    q.beneficio,
+    q.qtd_administrativo,
+    q.qtd_judicial
+  ORDER BY
+   q.competencia,
+   q.beneficio
 )
 """
 spark.sql(query)

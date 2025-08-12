@@ -13,6 +13,10 @@ df = (
 
 # COMMAND ----------
 
+df.printSchema()
+
+# COMMAND ----------
+
 # Grava dados do df na tabela delta na camada bronze 
 
 df.write.format("delta") \
