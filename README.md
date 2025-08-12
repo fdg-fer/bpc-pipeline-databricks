@@ -23,7 +23,7 @@ A análise permite identificar padrões de concessão, prazos e cobertura territ
 
 ## Tecnologias Utilizadas 
 
-- **Databricks Free Edition** (ambiente de notebooks)
+- **Databricks Free Edition** (ambiente de notebooks e cloud)
 - **Pyspark, Python e SQL** (tranformações, limpeza, análise exploratória, cálculos)
 - **Power BI**: (visualização final dos dados)
 - **GitHub** (versionamento e documentação - integrado ao Databricks)
