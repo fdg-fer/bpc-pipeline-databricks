@@ -15,6 +15,7 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 ---
 
 # Objetivo do Projeto
+
 Este pipeline foi desenvolvido para monitorar e analisar concessões do Benefício de Prestação Continuada (BPC), com foco em pedidos cujo processo iniciou a partir de 2024 e foram concedidos entre janeiro e junho de 2025.
 A análise permite identificar padrões de concessão, prazos e cobertura territorial, fornecendo informações estratégicas para áreas como advocacia previdenciária, órgãos públicos e estudos de políticas sociais
 ---
