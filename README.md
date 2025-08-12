@@ -311,7 +311,7 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
 
 - Visão que mostra o cenário regional ao longo dos meses por Tipo de Benefício.
 
-  ![Fluxo de Tranformação de tabelas](<dashboard/visao_nacional.png>)
+  ![Fluxo de Tranformação de tabelas](<dashboard/visao_regional.png>)
 ---
 
 ## Estrutura de Pastas do Projeto
