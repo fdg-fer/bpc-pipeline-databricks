@@ -249,7 +249,7 @@ Esse recorte temporal é aplicado para assegurar que a análise se concentre em 
 
 - **Dimensão UF/Região** – Mapeamento de Unidades Federativas para suas respectivas regiões.
 
-  ![Dimensão UF/Região](<img/dim_uf.png>)
+  ![Dimensão UF/Região](<img/dim_regiao.png>)
 
 #### Exemplos de Uso
 - Cálculo de cobertura por UF ao longo do tempo.
@@ -297,6 +297,21 @@ Fluxo de camadas das tabelas -> `gold_fato_populacao_bpc`
 **Observação:**  
 A distinção de recorte temporal é feita apenas em visões específicas para análises recentes. As camadas Bronze e Silver não aplicam esse filtro.
 
+
+#### Modelagem Star Schema - Power BI
+
+  ![Fluxo de Tranformação de tabelas](<img/schema_pbi.png>)
+
+
+#### Dashboard 
+
+- Visão que mostra o cenário nacional ao longo dos meses por Tipo de Benefício.
+
+  ![Fluxo de Tranformação de tabelas](<dashboard/visao_nacional.png>)
+
+- Visão que mostra o cenário regional ao longo dos meses por Tipo de Benefício.
+
+  ![Fluxo de Tranformação de tabelas](<dashboard/visao_nacional.png>)
 ---
 
 ## Estrutura de Pastas do Projeto
