@@ -154,6 +154,9 @@ A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensã
 - Organizar dados para fácil integração com ferramentas de BI.
 - Garantir consistência em métricas como **cobertura**, **prazos médios/medianos** e segmentações por UF e público-alvo.
 
+A métrica de prazo, tempo em que é requerido e benefício e até a sua concessão tem um comportamento bem distinto entre e administrativo judicial, nessa análise exploratória pode entender melhor 
+qual media foi aplicada.
+- [Análise exploratória de prazos](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/exploratoria_prazos.ipynb)
 
  
 ```
