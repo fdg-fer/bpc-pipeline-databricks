@@ -13,7 +13,7 @@ df = (
 
 # COMMAND ----------
 
-df.printSchema()
+df.count(), len(df.columns)
 
 # COMMAND ----------
 

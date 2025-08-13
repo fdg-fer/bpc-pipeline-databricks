@@ -37,6 +37,10 @@ df = df.select([F.col(c).alias(limpar_nome_coluna(c)) for c in df.columns]) # Re
 
 # COMMAND ----------
 
+df.count(), len(df.columns)
+
+# COMMAND ----------
+
 # Grava dados do df na tabela delta na camada bronze 
 
 df.write.format("delta") \

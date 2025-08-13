@@ -14,6 +14,13 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 
 ---
 
+## Link para Dashboard Interativo
+O dashboard foi publicado no **Power BI** e permite exploração dinâmica dos dados: 
+ 
+🔗[Acesse o dashboard do Power BI](https://app.powerbi.com/view?r=eyJrIjoiZWUxZTBjNWEtNzA0NS00MTIxLTgxMTQtMjMwZDFmMjY5Y2VmIiwidCI6IjI4M2VmYTcwLTVjMWMtNGRjMy04YWFjLWMyYTk0M2E2YzQ1NSJ9)
+
+---
+
 # Objetivo do Projeto
 
 - Monitorar concessões do BPC iniciadas a partir de 2024, concedidas entre janeiro e junho de 2025.
@@ -71,6 +78,9 @@ A Medallion Architecture permite:
 - Dados brutos carregados diretamente dos arquivos CSV das fontes públicas.
 - Pouco ou nenhum tratamento.
 - Objetivo: manter a versão original para rastreabilidade.
+
+#### Volume 
+![](<img/volume.png>)
 
 **Notebook Exemplo da Bronze** 
 ```
@@ -343,18 +353,12 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
 
 ### Dashboard 
 
-  No painel, os cards mostram que o prazo judicial teve um aumento de 17% no segundo semestre em relação ao primeiro, refletindo uma tendência de crescimento mensal constante, conforme a tabela detalhada.
-  A concessão administrativa também cresceu 12% do primeiro para o segundo trimestre.
-
-  Esses indicadores evidenciam uma pressão crescente tanto na via judicial quanto administrativa, importante para o gestor acompanhar e ajustar estratégias no escritório.
+  No painel, os cards mostram que as concessões do **BPC Deficiente** apresentaram um **prazo médio judicial 17% maior** no segundo trimestre em relação ao primeiro, refletindo uma **tendência de crescimento mensal constante**, conforme a tabela detalhada. **O prazo médio de concessão administrativa** também cresceu **12%** do primeiro para o segundo trimestre. Esses indicadores evidenciam uma **pressão crescente**, tanto na via judicial quanto na administrativa, sendo importante que o gestor acompanhe e ajuste estratégias no escritório.  
 
   ![Fluxo de Tranformação de tabelas](<dashboard/visao_nacional.png>)
 
-  A visão que mostra o cenário regional ao longo dos meses por Tipo de Benefício revela alguns pontos importantes na região Sul. Em Santa Catarina, o número absoluto de concessões do BPC Idoso é o menor entre os estados da região. Além disso, a cobertura por mil habitantes também é de 0,45 relativamente baixa, o que pode revelar uma demanda subatendida.
-
-  Chama atenção, ainda, a judicialização relativamente alta nesse tipo de benefício próximo dos 7%, considerando que o BPC Idoso possui uma legislação mais objetiva e com prazos mais curtos, o que normalmente resulta em maior proporção de concessões administrativas.
-
-  Esse cenário indica uma possível maior necessidade de representação profissional para os beneficiários do BPC Idoso em Santa Catarina, evidenciando uma oportunidade de negócio para serviços especializados de assessoria jurídica voltados para essa demanda.
+  No painel que mostra o cenário regional ao longo dos meses por **BPC Idoso**, revelam-se alguns pontos importantes na **região Sul**. 
+  O gráfico de correlação entre cobertura e taxa de judicialização evidencia que **Santa Catarina** é o estado que mais se afasta do padrão, combinando **baixa cobertura** do BPC Idoso (**0,45 concessões por mil habitantes**) com **judicialização elevada (≈7%)**. Os dados absolutos confirmam que o estado apresenta o **menor volume de concessões** na região. A série histórica mensal reforça a consistência desse cenário, sugerindo possíveis barreiras de acesso pela via administrativa e apontando espaço para atuação de serviços jurídicos especializados.
 
   ![Fluxo de Tranformação de tabelas](<dashboard/visao_regional.png>)
 

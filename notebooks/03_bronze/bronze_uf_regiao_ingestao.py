@@ -11,6 +11,10 @@ df = (
 
 # COMMAND ----------
 
+df.count(), len(df.columns)
+
+# COMMAND ----------
+
 # Grava tabela no schema bronze
 df.write.format("delta") \
         .mode("overwrite") \
