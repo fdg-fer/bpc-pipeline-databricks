@@ -16,8 +16,10 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 
 ## Link para Dashboard Interativo
 O dashboard foi publicado no **Power BI** e permite exploração dinâmica dos dados: 
- 
-🔗[Acesse o dashboard do Power BI](https://app.powerbi.com/view?r=eyJrIjoiZWUxZTBjNWEtNzA0NS00MTIxLTgxMTQtMjMwZDFmMjY5Y2VmIiwidCI6IjI4M2VmYTcwLTVjMWMtNGRjMy04YWFjLWMyYTk0M2E2YzQ1NSJ9)
+
+🔗[Acesse o dashboard do Power BI](https://app.powerbi.com/view?r=eyJrIjoiZWUxZTBjNWEtNzA0NS00MTIxLTgxMTQtMjMwZDFmMjY5Y2VmIiwidCI6IjI4M2VmYTcwLTVjMWMtNGRjMy04YWFjLWMyYTk0M2E2YzQ1NSJ9)<br>
+
+⚠️ **Regra de negócio importante:** a segmentação por **tipo de benefício** é de **seleção única**, já que cada benefício possui legislação, prazos e critérios próprios. Isso garante que os dados exibidos sejam consistentes e interpretáveis.
 
 ---
 
@@ -156,7 +158,10 @@ df_result.write.format("delta")\
 ```
 
 #### Estrutura das Tabelas da Camada Silver
-- [Baixar Dicionário Silver](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/silver.xlsx)
+
+Esse arquivo apresenta o dicionário de dados das tabelas da camada Silver.
+
+- [Baixar Dicionário de Dados Silver](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/silver.xlsx)
 
 ---
 ### 🥇 Camada Gold
@@ -267,7 +272,10 @@ spark.sql(query)
 ```
 
 #### Estrutura das Tabelas da Camada Gold
-- [Baixar Dicionário Gold](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/gold.xlsx)
+
+Esse arquivo apresenta o dicionário de dados das tabelas da camada Gold.
+
+- [Baixar Dicionário de Dados Gold](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/dic/gold.xlsx)
 
 **Tabelas Fato**
 
