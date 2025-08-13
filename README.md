@@ -16,15 +16,16 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 
 # Objetivo do Projeto
 
-Este pipeline foi desenvolvido para monitorar e analisar concessões do Benefício de Prestação Continuada (BPC), com foco em pedidos cujo processo iniciou a partir de 2024 e foram concedidos entre janeiro e junho de 2025.
-A análise permite identificar padrões de concessão, prazos e cobertura territorial, fornecendo informações estratégicas para áreas como advocacia previdenciária, órgãos públicos e estudos de políticas sociais.
+- Monitorar concessões do BPC iniciadas a partir de 2024, concedidas entre janeiro e junho de 2025.
+- Avaliar cobertura territorial, prazos e judicialização por tipo de benefício.
+- Apoiar decisões estratégicas em advocacia previdenciária e gestão pública.
 
 ---
 
 ## Tecnologias Utilizadas 
 
 - **Databricks Free Edition** (ambiente de notebooks e cloud)
-- **Pyspark, Python e SQL** (tranformações, limpeza, análise exploratória, cálculos)
+- **Pyspark, Python, SQL e DAX** (tranformações, limpeza, análise exploratória, cálculos)
 - **Power BI**: (visualização final dos dados)
 - **GitHub** (versionamento e documentação - integrado ao Databricks)
 
@@ -157,7 +158,6 @@ A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensã
 - Consolidar informações calculadas e agregadas.
 - Organizar dados para fácil integração com ferramentas de BI.
 - Garantir consistência em métricas como **cobertura**, **prazos médios/medianos, taxa de judicalização** e segmentações por UF, tipo de benefício e público-alvo.
-
 <br>
 
 🔎 **Métrica: Prazo(duração do processo em dias)**<br> 
@@ -165,7 +165,6 @@ A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensã
   medida central (média, mediana ou moda) melhor representa cada distribuição.
 
 - [Análise Exploratória de Prazos](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/exploratoria_prazos.ipynb)
-
 <br>
 
 📊 **Métrica: Cobertura de BPC a cada 1.000 habitantes**<br>
@@ -396,7 +395,7 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
 │   ├── fluxo_tabelas_databricks.png                # Fluxo visual entre tabelas
 │   └── prints_tabelas/                             # Prints detalhados por camada
 │ 
-├── exploratoria_prazos.ipynb
+├── exploratoria_prazos.py                          # Python - Análise exploratória de prazos
 └── README.md                                       # Visão geral do projeto
 
 ```
