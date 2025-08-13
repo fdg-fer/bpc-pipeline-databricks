@@ -81,8 +81,6 @@ A Medallion Architecture permite:
 - Pouco ou nenhum tratamento.
 - Objetivo: manter a versão original para rastreabilidade.
 
-#### Volume 
-![](<img/volume.png>)
 
 **Notebook Exemplo da Bronze** 
 ```
