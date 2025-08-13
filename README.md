@@ -71,6 +71,7 @@ A Medallion Architecture permite:
 - Pouco ou nenhum tratamento.
 - Objetivo: manter a versão original para rastreabilidade.
 
+**Notebook Exemplo da Bronze** 
 ```
 # Leitura de todos arquivos csv da pasta benef_conced contidos no volume
 
@@ -86,6 +87,7 @@ df = (
 from pyspark.sql import functions as F  # Importa funções do PySpark
 import re  # Módulo para operações com expressões regulares 
 
+# Função para retirar carcteres do nome da coluna
 def limpar_nome_coluna(nome):
     
     nome = nome.strip() # Remove espaços no início/fim
@@ -110,7 +112,7 @@ df.write.format("delta") \
 - Aplicação de regras de negócios e limpeza dos dados. 
 - Seleção de colunas relevantes, padronização de tipos, nomes e tipo de despacho (administrativo/judicial).
 
-
+**Notebook Exemplo da Silver** 
 ```
 # Leitura da tabela delta na camada bronze
 
@@ -154,14 +156,45 @@ A modelagem segue o formato **Star Schema**, com tabelas fato e tabelas dimensã
 #### Objetivos
 - Consolidar informações calculadas e agregadas.
 - Organizar dados para fácil integração com ferramentas de BI.
-- Garantir consistência em métricas como **cobertura**, **prazos médios/medianos** e segmentações por UF e público-alvo.
+- Garantir consistência em métricas como **cobertura**, **prazos médios/medianos, taxa de judicalização** e segmentações por UF, tipo de benefício e público-alvo.
 
-Esta análise investiga as diferenças significativas na métrica de prazo (tempo decorrido desde a requisição até a concessão do benefício) entre processos administrativos e judiciais, para identificar qual 
-medida central (média, mediana ou moda) melhor representa cada distribuição.
+<br>
 
-[Análise exploratória de prazos](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/exploratoria_prazos.ipynb)
+🔎 **Métrica: Prazo(duração do processo em dias)**<br> 
+  Esta análise investiga as diferenças significativas na métrica de prazo (tempo decorrido desde a requisição até a concessão do benefício) entre processos administrativos e judiciais, para identificar qual 
+  medida central (média, mediana ou moda) melhor representa cada distribuição.
 
+- [Análise Exploratória de Prazos](https://github.com/fdg-fer/bpc-pipeline-databricks/blob/main/exploratoria_prazos.ipynb)
+
+<br>
+
+📊 **Métrica: Cobertura de BPC a cada 1.000 habitantes**<br>
+Esta métrica tem como objetivo **normalizar a comparação entre Unidades da Federação (UFs)**, identificando potenciais públicos e demonstrando como a demanda está sendo atendida.
+A análise é segmentada em idosos e não idosos (classificação baseada na idade) para cada tipo de benefício.
+O cálculo relaciona a **média mensal de concessões** com o **público-alvo estimado**, consolidado na camada **Gold** a partir da **modelagem entre dados populacionais e concessões**.
+
+  ![Tabela População/Público-alvo na Camada Gold](<img/fato_populacao_cobertura.png>)
+
+
+**Medida DAX:**
+```
+Cobertura_mil_hab =
+CALCULATE(
+    DIVIDE(
+        SUM(gold_fato_populacao_bpc[media_beneficio]),
+        SUM(gold_fato_populacao_bpc[populacao_alvo])
+    )
+) * 1000
+```
+
+**Interpretação:**
+
+- Um valor maior indica que uma maior parcela do público-alvo está recebendo o benefício apontando alta população elegível.
+- Um valor menor indica que a cobertura está abaixo da média esperada, podendo sinalizar barreiras de acesso e demanda subatendida.
+
+<br>
  
+**Notebook Exemplo da Gold** 
 ```
 # Cria na camada gold a tabela fato_bpc_geral com granularidade por competência
 
@@ -273,7 +306,7 @@ Fluxo de camadas das tabelas -> `gold_fato_bpc_geral` e `gold_fato_bpc_uf`
 
 | Volume               | Bronze                          | Silver                  | Gold                                  |
 |:--------------------:|:-------------------------------:|:-----------------------:|:-------------------------------------:|
-| `6 arquivos csv`     | `bronze_inss_bpc_2025_01_06`    | `silver_bpc_concessoes` | `gold_fato_bpc_uf` / `gold_fato_bpc_geral` |
+| `6 arquivos csv`     | `bronze_inss_bpc_2025_01_06`    | `silver_bpc_concessoes` | `gold_fato_bpc_uf`/<br>`gold_fato_bpc_geral` |
 
 
   ![Fluxo de Tranformação de tabelas](<img/fluxo_bpc.png>)
@@ -283,7 +316,7 @@ Fluxo de camadas das tabelas -> `gold_fato_populacao_bpc`
 
 | Volume                | Bronze                                                             | Silver                                          | Gold                 | 
 |:---------------------:|:------------------------------------------------------------------:|:-----------------------------------------------:|:--------------------:|
-|  `2 arquivos csv`     |`bronze_ibge_bronze_censo_2022`/`bronze_ibge_bronze_municipios_ibge`| `silver_ibge_populacao`/`silver_municipios_ibge`| `gold_fato_populacao_bpc`| 
+|  `2 arquivos csv`     |`bronze_ibge_bronze_censo_2022`/<br>`bronze_ibge_bronze_municipios_ibge`| `silver_ibge_populacao`/<br>`silver_municipios_ibge`| `gold_fato_populacao_bpc`| 
 
 
   ![Fluxo de Tranformação de tabelas](<img/fluxo_populacao_bpc.png>)
@@ -335,21 +368,21 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
 │
 ├── 📁 notebooks
 │   ├── 📁 bronze
-│   │   ├── bronze_bpc_ingestao.ipynb              # PySpark - CSV do BPC → bronze
-│   │   ├── bronze_censo_ingestao.ipynb            # PySpark - CSV do Censo → bronze
-│   │   └── bronze_uf_municipios_ingestao.ipynb    # PySpark - CSV de UF → bronze
+│   │   ├── bronze_bpc_ingestao.py                 # PySpark - CSV do BPC → bronze
+│   │   ├── bronze_censo_ingestao.py               # PySpark - CSV do Censo → bronze
+│   │   └── bronze_uf_municipios_ingestao.py       # PySpark - CSV de UF → bronze
 │   │
 │   ├── 📁 silver
-│   │   ├── silver_bpc_concessoes.ipynb             # PySpark - Tratamento BPC
-│   │   ├── silver_censo_tratado.ipynb              # PySpark - População tratada
-│   │   ├── silver_uf_regiao_tratado.ipynb          # PySpark - UF e região
-│   │   └── silver_populacao_bpc.sql                # SQL - União para gerar população BPC
+│   │   ├── silver_bpc_concessoes.py                # PySpark - Tratamento BPC
+│   │   ├── silver_censo_tratado.py                 # PySpark - População tratada
+│   │   ├── silver_uf_regiao_tratado.py             # PySpark - UF e região
+│   │   └── silver_populacao_bpc.sql                # SQL - União para gerar População/público-alvo
 │   │
 │   ├── 📁 gold
 │   │   ├── gold_fato_bpc_uf.sql                    # SQL - Fato por UF
 │   │   ├── gold_fato_bpc_geral.sql                 # SQL - Fato geral
-│   │   ├── gold_dim_uf_regiao.sql                  # SQL - Dimensão UF
-│   │   ├── gold_dim_populacao.sql                  # SQL - População/público-alvo
+│   │   ├── gold_fato_populacao.sql                 # SQL - Fato População/público-alvo
+│   │   ├── gold_dim_uf_regiao.py                   # PySpark - Dimensão UF
 │   │   ├── gold_dim_beneficio.sql                  # SQL - Dimensão benefício
 │   │   └── gold_dim_calendario.sql                 # SQL - Dimensão calendário
 │   │
