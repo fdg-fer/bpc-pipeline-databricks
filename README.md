@@ -14,20 +14,19 @@ Este projeto propõe uma solução baseada em indicadores estruturados e atualiz
 
 ---
 
+# Objetivo do Projeto
+
+- Monitorar concessões do BPC iniciadas a partir de 2024, concedidas entre janeiro e junho de 2025.
+- Avaliar cobertura territorial, prazos e judicialização por tipo de benefício.
+- Apoiar decisões estratégicas em advocacia previdenciária e gestão pública.
+---
+
 ## Link para Dashboard Interativo
 O dashboard foi publicado no **Power BI** e permite exploração dinâmica dos dados: 
 
 🔗[Acesse o dashboard do Power BI](https://app.powerbi.com/view?r=eyJrIjoiZWUxZTBjNWEtNzA0NS00MTIxLTgxMTQtMjMwZDFmMjY5Y2VmIiwidCI6IjI4M2VmYTcwLTVjMWMtNGRjMy04YWFjLWMyYTk0M2E2YzQ1NSJ9)<br>
 
 ⚠️ **Regra de negócio importante:** a segmentação por **tipo de benefício** é de **seleção única**, já que cada benefício possui legislação, prazos e critérios próprios. Isso garante que os dados exibidos sejam consistentes e interpretáveis.
-
----
-
-# Objetivo do Projeto
-
-- Monitorar concessões do BPC iniciadas a partir de 2024, concedidas entre janeiro e junho de 2025.
-- Avaliar cobertura territorial, prazos e judicialização por tipo de benefício.
-- Apoiar decisões estratégicas em advocacia previdenciária e gestão pública.
 
 ---
 
