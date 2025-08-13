@@ -293,7 +293,7 @@ Esse recorte temporal é aplicado para assegurar que a análise se concentre em 
 #### Exemplos de Uso
 - Cálculo de cobertura por UF ao longo do tempo.
 - Comparação de prazos médios administrativos e judiciais.
-- Dashboards interativos no Power BI segmentados por região e público.
+- Dashboards interativos no Power BI segmentados por região, uf e tipo de benefício.
 
 ---
 
@@ -328,8 +328,8 @@ Fluxo de camadas das tabelas -> `gold_fato_populacao_bpc`
 
 | Tabela                   | Descrição                                   | Regra de Negócio / Filtro                                 |
 |--------------------------|---------------------------------------------|-----------------------------------------------------------|
-| `gold_fato_bpc_geral`    | BPC concedidos granularidade mensal com share de jucialização, prazos médios     | Considera apenas processos iniciados a partir de 2024 e concedidos entre jan–jun/2025 |           
-| `gold_fato_bpc_uf_` | BPC concedidos com granularidade mensal por UF com share de jucialização, prazos médios | Considera apenas processos iniciados a partir de 2024 e concedidos entre jan–jun/2025 |
+| `gold_fato_bpc_geral`    | BPC concedidos granularidade mensal com taxa de jucialização, prazos médios     | Considera apenas processos iniciados a partir de 2024 e concedidos entre jan–jun/2025 |           
+| `gold_fato_bpc_uf_` | BPC concedidos com granularidade mensal por UF com taxa de jucialização, prazos médios | Considera apenas processos iniciados a partir de 2024 e concedidos entre jan–jun/2025 |
 | `gold_fato_bpc_populacao_uf` | Distribuição por público-alvo baseado na idade por UF | Sem recorte temporal                                       |
 
 
@@ -342,7 +342,7 @@ A distinção de recorte temporal é feita apenas em visões específicas para a
   ![Fluxo de Tranformação de tabelas](<img/schema_pbi.png>)
 
 
-#### Dashboard 
+### Dashboard 
 
   No painel, os cards mostram que o prazo judicial teve um aumento de 17% no segundo semestre em relação ao primeiro, refletindo uma tendência de crescimento mensal constante, conforme a tabela detalhada.
   A concessão administrativa também cresceu 12% do primeiro para o segundo trimestre.
