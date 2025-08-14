@@ -10,8 +10,6 @@ Compreender **quais regiões apresentam índices elevados de judicialização e 
 
   - No **BPC-Deficiente**, que exige perícias e laudos mais complexos, indicadores como prazos médios e tipo de decisão ajudam a identificar áreas com maior necessidade de apoio jurídico especializado.
 
-Este projeto propõe uma solução baseada em indicadores estruturados e atualizados, permitindo monitorar a situação do BPC por unidade federativa e modalidade, ajudando gestores e advogados a agir de forma mais direcionada e eficaz.
-
 Este projeto aplica a **Arquitetura Medalhão (camadas bronze, silver e gold)** para organizar e analisar os dados do BPC, garantindo rastreabilidade e reprodutibilidade das análises. Com isso, indicadores estruturados e atualizados permitem monitorar a situação do benefício por unidade federativa e modalidade, ajudando gestores e advogados a agir de forma mais direcionada e eficaz.
 
 ---
@@ -83,7 +81,7 @@ A Medallion Architecture permite:
 - Objetivo: manter a versão original para rastreabilidade.
 
 
-**Notebook Exemplo da Bronze** 
+**Notebook Exemplo da Bronze - PySpark** 
 ```
 # Leitura de todos arquivos csv da pasta benef_conced contidos no volume
 
@@ -124,7 +122,7 @@ df.write.format("delta") \
 - Aplicação de regras de negócios e limpeza dos dados. 
 - Seleção de colunas relevantes, padronização de tipos, nomes e tipo de despacho (administrativo/judicial).
 
-**Notebook Exemplo da Silver** 
+**Notebook Exemplo da Silver - PySpark** 
 ```
 # Leitura da tabela delta na camada bronze
 
@@ -207,7 +205,7 @@ CALCULATE(
 
 <br>
  
-**Notebook Exemplo da Gold** 
+**Notebook Exemplo da Gold - SQL** 
 ```
 # Cria na camada gold a tabela fato_bpc_geral com granularidade por competência
 
