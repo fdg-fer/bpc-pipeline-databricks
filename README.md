@@ -1,4 +1,4 @@
-# Projeto BPC - Análise de Judicialização, Cobertura e Prazos
+# Arquitetura Medalhão aplicada ao BPC – Análise de Judicialização, Cobertura e Prazos
 
 O Benefício de Prestação Continuada (BPC) é um dos temas mais debatidos no âmbito da assistência social no Brasil. Voltado para pessoas idosas ou com deficiência em situação de vulnerabilidade, o BPC se diferencia de benefícios previdenciários como aposentadorias ou auxílios por incapacidade, pois não exige contribuição prévia do beneficiário. Essa característica, somada ao seu impacto social e orçamentário, o torna alvo frequente de debates políticos, ajustes fiscais e mudanças legislativas.
 
@@ -12,12 +12,14 @@ Compreender **quais regiões apresentam índices elevados de judicialização e 
 
 Este projeto propõe uma solução baseada em indicadores estruturados e atualizados, permitindo monitorar a situação do BPC por unidade federativa e modalidade, ajudando gestores e advogados a agir de forma mais direcionada e eficaz.
 
+Este projeto aplica a **Arquitetura Medalhão (camadas bronze, silver e gold)** para organizar e analisar os dados do BPC, garantindo rastreabilidade e reprodutibilidade das análises. Com isso, indicadores estruturados e atualizados permitem monitorar a situação do benefício por unidade federativa e modalidade, ajudando gestores e advogados a agir de forma mais direcionada e eficaz.
+
 ---
 
 # Objetivo do Projeto
 
 - Monitorar concessões do BPC iniciadas a partir de 2024, concedidas entre janeiro e junho de 2025.
-- Avaliar cobertura territorial, prazos e judicialização por tipo de benefício.
+- Avaliar cobertura territorial, prazos e judicializações por tipo de benefício.
 - Apoiar decisões estratégicas em advocacia previdenciária e gestão pública.
 ---
 
