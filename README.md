@@ -326,7 +326,7 @@ Fluxo de camadas das tabelas -> `gold_fato_bpc_geral` e `gold_fato_bpc_uf`
   ![Fluxo de Tranformação de tabelas](<img/fluxo_bpc.png>)
 
 
-Fluxo de camadas das tabelas -> `gold_fato_populacao_bpc`
+Fluxo de camadas da tabela -> `gold_fato_populacao_bpc`
 
 | Volume                | Bronze                                                             | Silver                                          | Gold                 | 
 |:---------------------:|:------------------------------------------------------------------:|:-----------------------------------------------:|:--------------------:|
